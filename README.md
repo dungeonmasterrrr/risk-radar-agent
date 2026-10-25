@@ -58,7 +58,15 @@ MODEL_API_KEY=<your-server-side-key>
 MODEL_NAME=<your-accessible-structured-output-model>
 ```
 
-服务端使用 OpenAI Responses 结构化输出适配，输出再次校验。真实模型测试尚需有效凭据；模拟接口测试不代表真实模型准确率。修改环境后重启本地服务；生产环境需要重新部署以应用。
+服务端支持 Gemini 原生 generateContent 与 OpenAI Responses 两种结构化输出适配，输出再次校验。Gemini 免费层配置见 [接入说明](docs/GEMINI_SETUP.md)，推荐使用自己的免费项目 key：
+
+```dotenv
+MODEL_PROVIDER=gemini
+GEMINI_API_KEY=<your-server-side-key>
+GEMINI_MODEL=gemini-3.1-flash-lite
+```
+
+保留原 OpenAI 配置时需显式设置 MODEL_PROVIDER=openai。Gemini 出错不会自动切换提供方或升级付费；额度与计费取决于 Google 项目。真实模型测试尚需有效凭据；模拟接口测试不代表真实模型准确率。修改环境后重启本地服务；生产环境需要重新部署以应用。
 
 ## 数据使用
 

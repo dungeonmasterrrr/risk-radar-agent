@@ -5,6 +5,9 @@ declare namespace Cloudflare {
     CONNECTORS?: any;
     MODEL_API_KEY?: string;
     MODEL_NAME?: string;
+    MODEL_PROVIDER?: string;
+    GEMINI_API_KEY?: string;
+    GEMINI_MODEL?: string;
     DATA_RELAY_URL?: string;
     DATA_RELAY_TOKEN?: string;
     SCHEDULER_SECRET?: string;

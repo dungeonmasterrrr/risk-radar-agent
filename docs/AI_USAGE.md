@@ -22,6 +22,8 @@
 
 当前未配置真实模型凭据，因此真实模型调用、模型准确率、费用、延迟及账户可用性均未验证。自动测试使用模拟响应验证成功、无效规则、错误结构、接口失败与降级；这些测试不等同于真实模型效果评估。
 
+新增 Gemini 原生适配，默认模型 gemini-3.1-flash-lite，官方说明支持结构化输出且列有免费层。已用模拟服务验证成功、澄清、429 限流、鉴权失败、模型不可用、超时、截断与无效输出；不会自动重试或切换其他模型。尚未替用户生成 key，真实 Gemini 调用仍待用户完成 AI Studio 申请。接入步骤见 GEMINI_SETUP.md。
+
 参考官方文档：[Structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs)、[Responses create](https://developers.openai.com/api/reference/resources/responses/methods/create)。
 
 ## 已发现并修正的问题
