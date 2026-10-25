@@ -20,6 +20,13 @@ export async function handleApi(request,db,env={}) {
       if(!request.headers.get('content-type')?.includes('application/json'))throw new AppError('写入请求必须使用 JSON',415);
     }
     const store=new Store(db);
+    // Only enabled after the hosting platform verifies owner-only access.
+    // Sites dispatch supplies the access boundary for this unattended writer.
+    if(path[0]==='service-tick') {
+      if(request.method!=='POST')throw new AppError('方法不支持',405);
+      if(env.PRIVATE_SERVICE_UPDATES!=='true')throw new AppError('私有服务调度入口未启用',403);
+      return json(await runDue(store,env,Date.now(),fetch,'sites-cloud-task'));
+    }
     if(path[0]==='tick') {
       if(request.method!=='POST')throw new AppError('方法不支持',405);
       if(!env.SCHEDULER_SECRET||env.SCHEDULER_SECRET.length<32)throw new AppError('后台调度密钥未配置',503);
@@ -38,7 +45,7 @@ export async function handleApi(request,db,env={}) {
       try {body=JSON.parse(raw);}catch{throw new AppError('JSON 格式无效');}
       if(!body||typeof body!=='object'||Array.isArray(body))throw new AppError('请求格式无效');
     }
-    if(path[0]==='config'&&request.method==='GET')return reply({symbols:SYMBOLS,modelConfigured:!!(env.MODEL_API_KEY&&env.MODEL_NAME),relayConfigured:!!env.DATA_RELAY_URL,schedulerConfigured:!!env.SCHEDULER_SECRET,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'腾讯公开行情为实验接入；扶摇与 iFinD 需配置授权中继。演示数据不代表真实市场。'});
+    if(path[0]==='config'&&request.method==='GET')return reply({symbols:SYMBOLS,modelConfigured:!!(env.MODEL_API_KEY&&env.MODEL_NAME),relayConfigured:!!env.DATA_RELAY_URL,schedulerConfigured:!!env.SCHEDULER_SECRET||env.PRIVATE_SERVICE_UPDATES==='true',schedulerCadenceSeconds:env.PRIVATE_SERVICE_UPDATES==='true'?300:15,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'腾讯公开行情为实验接入；扶摇与 iFinD 需配置授权中继。演示数据不代表真实市场。'});
     if(path[0]==='compile'&&request.method==='POST')return reply(await compile(body.input,env));
     if(path[0]==='notifications') {
       if(request.method==='GET')return reply({notifications:await store.notifications(owner)});

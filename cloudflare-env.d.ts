@@ -8,5 +8,6 @@ declare namespace Cloudflare {
     DATA_RELAY_URL?: string;
     DATA_RELAY_TOKEN?: string;
     SCHEDULER_SECRET?: string;
+    PRIVATE_SERVICE_UPDATES?: string;
   }
 }

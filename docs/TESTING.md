@@ -4,7 +4,7 @@
 
 ## 当前结果
 
-- 自动化测试：59 项通过、0 失败。原始 JUnit：[unit-results.xml](validation/unit-results.xml)。
+- 自动化测试：60 项通过、0 失败。原始 JUnit：[unit-results.xml](validation/unit-results.xml)。
 - TypeScript：`tsc --noEmit` 通过。
 - Vinext：生产构建通过；部署产物的 Worker scheduled 入口通过 Miniflare 直接调用验证，返回 ok 并写入 cloudflare-cron 心跳，见 [worker-scheduled.json](validation/worker-scheduled.json)。
 - 浏览器：9 个操作场景通过、0 页面脚本错误。报告额外包含 1 条后台执行证据，不能将该证据另算一次操作测试。见 [browser-results.json](validation/browser-results.json)。

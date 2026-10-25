@@ -105,6 +105,8 @@ npm exec --package=playwright -- playwright install chromium
 
 提供两种后台执行入口：Worker `scheduled` 与密钥保护的 `POST /api/radar/tick`。源配置包含每分钟 cron；部署后必须观察心跳或调度记录，不能只凭配置认定云端调度已启用。Node 调度器可部署为独立常驻进程，请使用平台进程管理器维持运行。
 
+当前所有者私有 Sites 还支持平台访问保护的 service-tick，由关联云端任务每 5 分钟轮询。该入口只在已验证私有边界后启用；对外分享前须关闭或补充独立服务鉴权，详见 [云端约定](docs/CLOUD_UPDATES.md)。本地轮询更细；界面配置间隔不构成云端秒级检查承诺。
+
 独立 HTTP 调度需在目标应用与调度器中配置相同的 `SCHEDULER_SECRET`（至少 32 字符），并设置 `RADAR_ORIGIN`。本地 `.env.scheduler` 仅用于手动运行 `npm run scheduler`；勿提交实际值。
 
 ## 目录与交付材料

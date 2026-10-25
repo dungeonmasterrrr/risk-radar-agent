@@ -12,11 +12,11 @@
 
 ## 托管目标
 
-已注册所有者私有 Sites 项目，预期域名为 `https://risk-radar-agent-xjc.pinkstoat514.chatgpt.site`。该地址在平台确认部署成功前只是预期地址。
+第一版已由平台确认部署成功：`https://risk-radar-agent-xjc.pinkstoat514.chatgpt.site`。生产六张业务表已创建；线上 API、创建、提醒、去重、过期降级和真实行情适配已实际验证，见 validation/hosted-results.json。
 
 托管使用 D1 `DB` 绑定。源代码中不包含真实数据库 ID、模型 key、数据中继 token 或调度密钥。新站点维持所有者私有访问，不自动改为公开。
 
-后续部署结果、版本及调度验证证据将写入本文或 validation/ 中。
+原生 cron 尚无云端触发证据，当前改用每 5 分钟关联云端任务调用所有者私有平台保护的 service-tick。入口验证、定时任务保存与自动实际运行须分别记录，不把人工调用当成自动触发。
 
 ## 自托管后台
 

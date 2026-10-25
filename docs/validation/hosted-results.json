@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-25T23:05:19.102Z",
+  "origin": "https://risk-radar-agent-xjc.pinkstoat514.chatgpt.site",
+  "checks": [
+    {
+      "name": "线上 API 与数据库可访问",
+      "passed": true,
+      "modelConfigured": false,
+      "relayConfigured": false
+    },
+    {
+      "name": "线上创建、提醒与去重",
+      "passed": true,
+      "taskId": "52662ffd-6c0f-4ec2-88a2-19ef944037d1",
+      "runId": "c6b89207-0303-40bc-9064-bc8a256b3187"
+    },
+    {
+      "name": "线上过期降级",
+      "passed": true,
+      "runId": "85f425fe-027a-4cac-8182-cc3d0bd76f46"
+    },
+    {
+      "name": "线上真实行情适配",
+      "passed": true,
+      "result": "unknown",
+      "sourceTime": "2026-10-23T16:14:58+08:00",
+      "error": null
+    }
+  ],
+  "observedTaskId": "52662ffd-6c0f-4ec2-88a2-19ef944037d1",
+  "heartbeat": null,
+  "success": true
+}
