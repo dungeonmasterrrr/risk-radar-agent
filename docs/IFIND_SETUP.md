@@ -4,7 +4,7 @@
 
 密钥放在被Git忽略的 `.dev.vars`：`IFIND_MCP_API_KEY=真实密钥`。发布环境使用同名secret。禁止放进前端、Git、任务JSON或模型提示词。
 
-连接固定官方域名 `https://api-mcp.51ifind.com:8643/ds-mcp-servers/`，只开放stock、index、news三个服务。按官方要求使用裸Authorization Token、initialize、notifications/initialized、Mcp-Session-Id及tools/call，兼容JSON和SSE结果。重定向不跟随，错误不回传上游正文，响应最多512KiB，单次网络请求12秒、单轮MCP取数40秒预算；同一Worker实例同时最多2个MCP请求。跨实例并发不作保证，429进入既有退避机制，不自动切换模拟或付费来源。
+连接固定官方站点HTTPS网关 `https://mcp.51ifind.com/ds-mcp-servers/`（官方包原入口api-mcp:8643在Workers出现530／超时；官网443入口已用相同密钥、会话协议和工具验证），只开放stock、index、news三个服务。按官方要求使用裸Authorization Token、initialize、notifications/initialized、Mcp-Session-Id及tools/call，兼容JSON和SSE结果。重定向不跟随，错误不回传上游正文，响应最多512KiB，单次网络请求12秒、单轮MCP取数40秒预算；同一Worker实例同时最多2个MCP请求。跨实例并发不作保证，429进入既有退避机制，不自动切换模拟或付费来源。
 
 ## 已接入能力
 

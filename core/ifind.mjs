@@ -1,6 +1,8 @@
 import {AppError} from './rules.mjs';
 import {getFuyaoSnapshot} from './fuyao.mjs';
-const BASE='https://api-mcp.51ifind.com:8643/ds-mcp-servers';
+// Official website gateway; same MCP paths and auth, verified against live tools.
+// The package's api-mcp:8643 origin is not consistently reachable from Workers.
+const BASE='https://mcp.51ifind.com/ds-mcp-servers';
 const ENDPOINTS={stock:`${BASE}/hexin-ifind-ds-stock-mcp`,news:`${BASE}/hexin-ifind-ds-news-mcp`,index:`${BASE}/hexin-ifind-ds-index-mcp`};
 const ALLOWED={stock:['stock_highfreq_quotes'],index:['index_highfreq_quotes'],news:['search_notice','search_news','search_trending_news']};
 const PROTOCOL='2025-03-26';
