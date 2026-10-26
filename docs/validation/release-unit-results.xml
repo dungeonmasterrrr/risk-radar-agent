@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="本地明确价格语句编译为可修改草案，披露默认与未调用模型" time="0.007814" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="公告、热度、组合及绝对日期被解析" time="0.005909" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：茅台明显下跌时提醒" time="0.000662" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：下周关注茅台财报" time="0.000346" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：茅台和宁德时代低于 100 元提醒" time="0.000936" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：某只股票低于 100 元" time="0.002484" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：茅台价格变化时提醒" time="0.000870" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：茅台低于 1400 或高于 1500 提醒" time="0.000455" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="交易与保证收益请求被能力范围拦截" time="0.000429" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="不支持的附加指标和混合逻辑不得被静默忽略" time="0.000689" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="模型输出经二次验证，并实际构建结构化输出请求" time="0.063687" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="模型接口失败时明确降级" time="0.001615" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="模型无效结构时明确降级" time="0.001206" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="模型错误规则时明确降级" time="0.001356" classname="test" file="tests/agent.test.mjs"/>
+	<testcase name="API 端到端：编译、确认、检查、证据、通知与隔离" time="0.099862" classname="test" file="tests/api.test.mjs"/>
+	<testcase name="拒绝跨来源写入与调度伪造" time="0.018323" classname="test" file="tests/api.test.mjs"/>
+	<testcase name="私有平台调度入口默认关闭，仅显式启用的私有部署可用" time="0.004979" classname="test" file="tests/api.test.mjs"/>
+	<testcase name="接口如实披露本地与云端调度实际频率" time="0.004636" classname="test" file="tests/api.test.mjs"/>
+	<testcase name="无效 JSON、错误类型、过大输入和不存在接口安全返回" time="0.005155" classname="test" file="tests/api.test.mjs"/>
+	<testcase name="示例初始化可重复调用且不污染其他浏览器空间" time="0.013418" classname="test" file="tests/api.test.mjs"/>
+	<testcase name="主链路通知、去重及幂等请求只产生一次提醒" time="0.030141" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="条件恢复后再次命中，冷却中保留记录，结束后可通知" time="0.009486" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="公告按稳定事件 ID 去重，条件恢复也不重复旧公告" time="0.009138" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="未知结果不清空上一轮命中，恢复数据后不会重复通知" time="0.008398" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="暂停禁止检查，恢复保留去重与冷却" time="0.007324" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="修改规则生成版本，旧记录证据保留，拒绝过期版本覆盖" time="0.008982" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="到期任务由后台执行；未到期与暂停任务跳过；有心跳证据" time="0.008781" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="并发执行只允许一个任务租约，执行中不能编辑或暂停" time="0.009164" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="过期租约可恢复，旧执行者不能提交结果" time="0.004770" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="真实交易时段缺少官方日历时降级，不猜测交易日" time="0.060390" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="授权日历非交易日跳过；午休不调用数据接口" time="0.007731" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="持久化数据库重启后仍去重，并恢复到期调度" time="0.055504" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="用户隔离覆盖读取、运行、修改及通知" time="0.004780" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="旧执行者租约过期被新执行者接管后不能覆盖新结果" time="0.007776" classname="test" file="tests/engine.test.mjs"/>
+	<testcase name="扶摇规则可检查和保存，拒绝旧数值热度与尚未直连的公告" time="0.005560" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="扶摇行情使用完整代码和 header 密钥，保留来源时间与请求 ID" time="0.065293" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="沪深300调用指数快照接口，不能误用股票接口" time="0.001690" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="最新价为空不以昨收替代；仍保存可追溯原字段" time="0.002512" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="HTTP 200 中的业务错误 2001 不当作成功" time="0.001400" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="HTTP 200 中的业务错误 2003 不当作成功" time="0.001057" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="HTTP 200 中的业务错误 3002 不当作成功" time="0.000900" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="HTTP 200 中的业务错误 4001 不当作成功" time="0.000867" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="HTTP 200 中的业务错误 5002 不当作成功" time="0.001007" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="HTTP 限流、重定向与网络超时均不重试或切换演示" time="0.002157" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="缺少密钥明确失败，无凭据不尝试请求" time="0.000728" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="字段漂移、空列表、重复及错标的都无法正常计算" time="0.003693" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="过期来源时间保留原值，由统一新鲜度规则拒绝" time="0.000830" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="交易时段拉取官方日历，按北京时间判断今天" time="0.001740" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="缺失、空、日期冲突与过期日历不将今天猜成非交易日" time="0.002155" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="价格失败不丢弃成功日历，纯日历全天任务不访问外部" time="0.005897" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="后台执行关联扶摇证据；非交易日跳过；日历失败明确解释" time="0.017386" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="自然语言扶摇与真实价格生成直连草案，不声称支持公告" time="0.006744" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="配置接口披露扶摇状态，不回传密钥" time="0.006630" classname="test" file="tests/fuyao.test.mjs"/>
+	<testcase name="Gemini 仅需自己的 key，使用已核对免费层模型默认值" time="0.003907" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="Gemini 请求在 header 放密钥，结构化草案经二次校验" time="0.068248" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="Gemini 配额耗尽后不重试、不切换其他模型，明确披露降级" time="0.003377" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="Gemini HTTP 400 安全降级且不暴露上游内容" time="0.002372" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="Gemini HTTP 401 安全降级且不暴露上游内容" time="0.001622" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="Gemini HTTP 403 安全降级且不暴露上游内容" time="0.001865" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="Gemini HTTP 404 安全降级且不暴露上游内容" time="0.001674" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="Gemini HTTP 503 安全降级且不暴露上游内容" time="0.001075" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="Gemini 截断、拦截、无效 JSON 与非法规则均不能作为有效模型草案" time="0.005204" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="Gemini 超时会说明原因，不吞掉用户关注输入" time="0.001330" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="Gemini 澄清结果保留，不擅自生成可启用规则" time="0.001035" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="运行状态仅返回 Gemini 提供方与模型名，不返回 key" time="0.011116" classname="test" file="tests/gemini.test.mjs"/>
+	<testcase name="热榜请求完整前100名，四字段保留原始精度、源时间与追溯ID" time="0.067429" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜条件 {&quot;mode&quot;:&quot;listed&quot;} 的边界" time="0.006171" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜条件 {&quot;mode&quot;:&quot;rank&quot;,&quot;topN&quot;:5} 的边界" time="0.001985" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜条件 {&quot;mode&quot;:&quot;rank&quot;,&quot;topN&quot;:4} 的边界" time="0.001871" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜条件 {&quot;mode&quot;:&quot;rank_change&quot;,&quot;direction&quot;:&quot;up&quot;,&quot;minChange&quot;:7} 的边界" time="0.004521" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜条件 {&quot;mode&quot;:&quot;rank_change&quot;,&quot;direction&quot;:&quot;up&quot;,&quot;minChange&quot;:8} 的边界" time="0.002755" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜条件 {&quot;mode&quot;:&quot;rank_change&quot;,&quot;direction&quot;:&quot;down&quot;,&quot;minChange&quot;:1} 的边界" time="0.002531" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜条件 {&quot;mode&quot;:&quot;trend&quot;,&quot;trend&quot;:&quot;up&quot;} 的边界" time="0.001626" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜条件 {&quot;mode&quot;:&quot;trend&quot;,&quot;trend&quot;:&quot;down&quot;} 的边界" time="0.001658" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜条件 {&quot;mode&quot;:&quot;trend&quot;,&quot;trend&quot;:&quot;flat&quot;} 的边界" time="0.001873" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="原始热度值只展示，数值变化不改变排名或趋势判断" time="0.003881" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="所有来源拒绝旧数值热度条件，不能通过额外字段绕过" time="0.001816" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="不在完整前100名为未满足，部分榜单不能伪装为完整未上榜" time="0.003554" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="排名变化方向、趋势缺失、冲突和榜单过期都不误报" time="0.006632" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="下降和持平使用上游字段，不把缺失值当作零" time="0.005031" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="重复代码、重复排名、乱序、错误标的格式和无来源时间拒绝整份榜单" time="0.005472" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="多个同周期条件共享一份源数据，小时榜和24小时榜不混用" time="0.005730" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="不支持的市场、指数和越界排名不能启用热榜规则" time="0.001328" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜HTTP错误、空榜和字段缺失返回未知，不切换模拟" time="0.001487" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="自然语言生成四种热榜草案，榜单周期与冷却不误作检查频率" time="0.008513" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="数值热度请求在模型调用前拦截，旧模型草案不能偷偷转成价格条件" time="0.001389" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="模型不得改变用户明确指定的热榜排名范围" time="0.002576" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="iFinD价格与扶摇热榜可组合，分别保留来源且并行发起取数" time="0.007364" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜后台去重按命中周期，原始热度变化不会重复通知，恢复后可再触发" time="0.021692" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="旧数值规则保留历史但停止判断，用户确认新版本后按热榜条件运行" time="0.014075" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="热榜只读接口展示四字段，不泄露密钥且拒绝任意周期" time="0.012788" classname="test" file="tests/heat.test.mjs"/>
+	<testcase name="MCP按官方协议初始化、通知和会话取数，裸Token不会回传" time="0.074096" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="SSE仅采用对应请求结果，错ID和协议错误不能当作成功" time="0.001554" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="MCP HTTP 301 不重试、不转发密钥、不切换模拟" time="0.001836" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="MCP HTTP 401 不重试、不转发密钥、不切换模拟" time="0.000764" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="MCP HTTP 403 不重试、不转发密钥、不切换模拟" time="0.000737" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="MCP HTTP 429 不重试、不转发密钥、不切换模拟" time="0.000753" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="MCP HTTP 500 不重试、不转发密钥、不切换模拟" time="0.000751" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="没有真实密钥不发请求，工具名不能由访客任意指定" time="0.000616" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="业务错误、工具错误、超大响应均不得当作真实数据" time="0.006673" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="行情错标的、空值、重复和无来源时间均无法计算" time="0.001428" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="公告按上游日期与标的校验，标题片段合并匹配并生成稳定去重标识" time="0.025351" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="分钟窗口切入只有日期的公告时无法判断，不伪造发布时间" time="0.002730" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="空语义结果、其他公司、未来公告和无时间记录都不能误报" time="0.006935" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="多个公告条件分别保留查询证据，不混用关键词和窗口" time="0.005414" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="公开查询只允许三类工具，日期有界；热点检索不生成数值热度" time="0.002793" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="真实新闻返回的data嵌套JSON可解析，备注不计条数且排除范围外结果" time="0.001898" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="自然语言iFinD可生成公告与价格草案；模拟请求保留演示；真实热度需澄清" time="0.007522" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="真实公告后台执行、证据持久化与跨次去重" time="0.023521" classname="test" file="tests/ifind.test.mjs"/>
+	<testcase name="扶摇目录搜索接受第五个之外的股票并区分未接入ETF" time="0.076476" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="纳斯达克100首选指数而非同名境内基金，英文代码可动态搜索" time="0.003183" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="验证动态标的身份，错误或不存在代码不能保存为已核实" time="0.008470" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="原句可生成五分钟回撤草案并披露滚动窗口；不偷偷替换其他基准" time="0.006607" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="回撤以窗口高点计算并保留证据，达到阈值才命中" time="0.006496" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="回撤异常stale不能误报" time="0.001368" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="回撤异常missing不能误报" time="0.001000" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="回撤异常short不能误报" time="0.001043" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="回撤异常gap不能误报" time="0.001265" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="回撤异常mismatch不能误报" time="0.001052" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="回撤异常nullhigh不能误报" time="0.001370" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="美股交易时段不经过A股午休或收盘门禁，后台通知仍去重" time="0.018987" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="模型不能把已明确的纳指替换成其他标的" time="0.007166" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="模型不可用时动态目录已核实的非示例标的仍能本地生成草案" time="0.003402" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="同代码跨市场目录返回两个结果时请求澄清，不选第一个" time="0.001688" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="API允许非示例真实标的保存、校正名称，拒绝不存在标的并移除旧配置" time="0.012709" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="草案试算读取真实行情并返回证据，不创建任务或通知" time="0.007651" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="Yahoo主接口限流仅尝试一次固定备用域名，并保留实际来源地址" time="0.001712" classname="test" file="tests/instruments.test.mjs"/>
+	<testcase name="模型请求在真实 Worker 运行时可构造，Gemini 与原有提供方均受保护" time="0.529866" classname="test" file="tests/model-worker.test.mjs"/>
+	<testcase name="模型接口重定向被拒绝，不把密钥转发到新地址" time="0.382831" classname="test" file="tests/model-worker.test.mjs"/>
+	<testcase name="腾讯实验接口读取行情原始时间，不将抓取时间当数据时间" time="0.070200" classname="test" file="tests/providers.test.mjs"/>
+	<testcase name="公开行情错误状态和字段变化均不静默接受" time="0.003408" classname="test" file="tests/providers.test.mjs"/>
+	<testcase name="旧中继规则明确要求迁移，忽略旧中继配置且不发请求" time="0.000607" classname="test" file="tests/providers.test.mjs"/>
+	<testcase name="标的解析区分沪深代码并拒绝多标的歧义" time="0.003621" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="规则规范化会丢弃额外字段并保留全部受支持条件" time="0.004692" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="拒绝非法标的代码" time="0.003210" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="拒绝非法阈值" time="0.000633" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="拒绝负数" time="0.000555" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="拒绝频率过高" time="0.000534" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="拒绝空条件" time="0.000700" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="拒绝过多条件" time="0.000425" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="拒绝错误操作符" time="0.000422" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="拒绝无时区日期" time="0.000848" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="拒绝不存在日期" time="0.000408" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="三值逻辑覆盖真、假与未知的全部组合" time="0.000452" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="比较边界：等于阈值仅满足非严格比较" time="0.001999" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="stale 不得伪装为条件未满足" time="0.000374" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="conflict 不得伪装为条件未满足" time="0.000222" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="failure 不得伪装为条件未满足" time="0.000160" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="missing 不得伪装为条件未满足" time="0.000179" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="未来数据时间异常被拒绝" time="0.000361" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="缺少来源不允许触发，组合已知结果仍保留降级标记" time="0.000416" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="日历时间到达即命中，不依赖行情" time="0.000228" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="规范化后的日历规则仍可再次校验和编辑" time="0.001812" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="事件按发布时间回看，不将未来公告视为已发生" time="0.000566" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="交易时间处理北京时间、午休、收盘和周末" time="0.000280" classname="test" file="tests/rules.test.mjs"/>
+	<testcase name="扶摇A股在行情429时仍保存并列出，运行失败保留任务且不发提醒" time="0.078407" classname="test" file="tests/save-availability.test.mjs"/>
+	<testcase name="已知标的身份不允许绕过条件和来源校验" time="0.004885" classname="test" file="tests/save-availability.test.mjs"/>
+	<!-- tests 157 -->
+	<!-- suites 0 -->
+	<!-- pass 157 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 2615.1301 -->
+</testsuites>

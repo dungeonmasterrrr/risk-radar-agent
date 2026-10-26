@@ -1,0 +1,35 @@
+{
+  "boardCoverage": 100,
+  "fourFields": true,
+  "filterWorks": true,
+  "rawThresholdRemoved": true,
+  "livePreview": {
+    "id": "c1",
+    "condition": "同花顺热股24小时榜前 10 名",
+    "type": "heat",
+    "truth": true,
+    "reason": "当前第 1 名；要求前 10 名",
+    "evidence": {
+      "source": "扶摇 · 同花顺A股热股榜",
+      "url": "https://fuyao.aicubes.cn/api/a-share/special-data/hot-stock-list?period=day&limit=100",
+      "requestId": "87fc5cc14bdb46b184d3531496f1ebf0",
+      "simulated": false,
+      "observedAt": "2026-10-26T05:31:51.173Z",
+      "fetchedAt": "2026-10-26T05:32:04.998Z",
+      "period": "day",
+      "coverageRank": 100,
+      "requestedLimit": 100,
+      "returnedCount": 100,
+      "listed": true,
+      "rank": 1,
+      "rawHeat": "7624557",
+      "rankChange": 0,
+      "trend": "flat",
+      "conflict": false,
+      "thscode": "688836.SH"
+    },
+    "identities": []
+  },
+  "mobileOverflow": false,
+  "errors": []
+}
