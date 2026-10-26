@@ -1,0 +1,100 @@
+{
+  "testedAt": "2026-10-26T00:53:01.193Z",
+  "origin": "https://risk-radar-agent-xjc.pinkstoat514.chatgpt.site",
+  "checks": [
+    {
+      "name": "线上扶摇配置",
+      "passed": true,
+      "modelConfigured": true
+    },
+    {
+      "name": "线上真实行情及日历接口",
+      "passed": true,
+      "connected": true,
+      "latestPriceAvailable": false,
+      "snapshot": {
+        "price": {
+          "source": "扶摇 · A股行情快照",
+          "url": "https://fuyao.aicubes.cn/api/a-share/prices/snapshot?thscodes=600519.SH",
+          "requestId": "b875533306a2412491d11d7250f797ca",
+          "simulated": false,
+          "observedAt": "2026-10-26T00:53:03.000Z",
+          "fetchedAt": "2026-10-26T00:53:03.400Z",
+          "value": null,
+          "error": "扶摇尚未提供有效最新成交价；可能尚未开市或数据未就绪，不使用昨收价替代",
+          "rawFields": {
+            "thscode": "600519.SH",
+            "last_price": null,
+            "prev_price": 1335,
+            "timestamp": 1792975983000
+          }
+        },
+        "tradingDay": true,
+        "tradingCalendar": {
+          "source": "扶摇 · A股交易日历",
+          "url": "https://fuyao.aicubes.cn/api/a-share/calendar/trading-days",
+          "requestId": "9de701da3b124a158eb079f06ab7c711",
+          "simulated": false,
+          "observedAt": "2026-10-26T00:53:04.907Z",
+          "fetchedAt": "2026-10-26T00:53:03.400Z",
+          "date": "20261026",
+          "tradingDay": true,
+          "window": {
+            "first": "20251027",
+            "last": "20261026"
+          },
+          "count": 242
+        }
+      }
+    },
+    {
+      "name": "自然语言选择扶摇",
+      "passed": true,
+      "mode": "model",
+      "model": "gemini-3.1-flash-lite",
+      "trace": [
+        {
+          "tool": "resolve_symbol",
+          "status": "ok",
+          "detail": "贵州茅台 · SH600519"
+        },
+        {
+          "tool": "model_compile",
+          "status": "ok",
+          "detail": "gemini · gemini-3.1-flash-lite；已实际调用并通过输出校验"
+        },
+        {
+          "tool": "validate_rule",
+          "status": "ok",
+          "detail": "等待用户检查与确认，尚未创建任务"
+        }
+      ]
+    },
+    {
+      "name": "线上任务执行及持久化证据",
+      "passed": true,
+      "taskId": "6bd8a744-0d52-43a0-ac31-96330195e1fb",
+      "runId": "e7e83c25-81cd-4c63-821b-72529cbbf18d",
+      "result": "unknown",
+      "explanation": "本次无法判断：扶摇尚未提供有效最新成交价；可能尚未开市或数据未就绪，不使用昨收价替代",
+      "price": {
+        "source": "扶摇 · A股行情快照",
+        "url": "https://fuyao.aicubes.cn/api/a-share/prices/snapshot?thscodes=600519.SH",
+        "requestId": "7621a113e71c465fbebf372673b52749",
+        "simulated": false,
+        "observedAt": "2026-10-26T00:53:06.000Z",
+        "fetchedAt": "2026-10-26T00:53:08.656Z",
+        "value": null,
+        "error": "扶摇尚未提供有效最新成交价；可能尚未开市或数据未就绪，不使用昨收价替代",
+        "rawFields": {
+          "thscode": "600519.SH",
+          "last_price": null,
+          "prev_price": 1335,
+          "timestamp": 1792975986000
+        }
+      }
+    }
+  ],
+  "success": true,
+  "testTaskPaused": true
+}

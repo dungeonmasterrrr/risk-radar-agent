@@ -28,6 +28,8 @@
 
 原始首轮记录保存在 outputs/fuyao-first-probe.json 与 outputs/fuyao-calendar-probe.json。应用适配后的本地与线上验证另保存为 outputs/fuyao-adapter-live.json、outputs/fuyao-online-check.json。
 
+线上追加验证通过：配置读取、行情与日历连接、Gemini 生成扶摇来源草案、任务执行及持久化证据共四项。检查后暂停了验收任务。报告副本见 validation/fuyao-online-check.json。
+
 ## 官方文档
 
 [快速开始](https://fuyao.aicubes.cn/docs/quickstart/)、[行情](https://fuyao.aicubes.cn/docs/api-reference/prices/)、[交易日历](https://fuyao.aicubes.cn/docs/api-reference/calendar/)、[完整聚合文档](https://fuyao.aicubes.cn/llms-full.txt)。权限、数据可用性和限流以平台与每次响应为准。
