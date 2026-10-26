@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Activity, ArrowLeft, ArrowRight, Bell, BookOpen, Check, ChevronRight, Clock3, FileText, Layers3, Loader2, Pause, Play, Plus, Radar, RefreshCw, Search, Settings2, ShieldCheck, Sparkles, TriangleAlert, X } from 'lucide-react';
 import { conditionLabel, summarize } from '@/core/rules.mjs';
 import RuleEditor from '@/components/rule-editor';
@@ -24,7 +24,24 @@ export default function Home(){
   const [page,setPage]=useState('overview'),[id,setId]=useState<string|null>(null),[detail,setDetail]=useState<Any>(null),[tab,setTab]=useState('runs');
   const [loading,setLoading]=useState(true),[busy,setBusy]=useState(''),[error,setError]=useState(''),[toast,setToast]=useState('');
   const [query,setQuery]=useState(''),[filter,setFilter]=useState('all'),[editor,setEditor]=useState<Any>(null);
-  async function refresh(selected:string|null=id){const [t,n,c]=await Promise.all([api('tasks'),api('notifications'),api('config')]);setTasks(t.tasks);setNotes(n.notifications);setConfig(c);if(selected)setDetail(await api(`tasks/${selected}`));}
+  const refreshSequence=useRef(0),selectedId=useRef(id);selectedId.current=id;
+  async function refresh(selected:string|null=id){
+    const sequence=++refreshSequence.current;
+    const apply=(fn:()=>void)=>{if(sequence===refreshSequence.current)fn();};
+    const requests=[api('tasks').then(t=>apply(()=>setTasks(t.tasks))),api('notifications').then(n=>apply(()=>setNotes(n.notifications))),api('config').then(c=>apply(()=>setConfig(c)))];
+    if(selected)requests.push(api(`tasks/${selected}`).then(d=>apply(()=>{if(selectedId.current===selected)setDetail(d);})));
+    const results=await Promise.allSettled(requests);
+    if(sequence!==refreshSequence.current)return;
+    if(results.some(r=>r.status==='rejected'))throw new Error('部分数据刷新失败，已显示本次成功读取的数据；请稍后刷新。');
+  }
+  function saved(task:Any){
+    refreshSequence.current++;
+    setTasks(current=>[task,...current.filter(t=>t.id!==task.id)]);
+    setDetail((current:Any)=>current?.task?.id===task.id?{...current,task}:{task,runs:[],versions:[],audit:[]});
+    selectedId.current=task.id;setId(task.id);setPage('overview');setTab('runs');setQuery('');setFilter('all');setError('');setEditor(null);
+    setToast(`规则 v${task.version} 已确认，任务已保存`);
+    void refresh(task.id).catch(()=>setError('任务已保存，部分状态暂未刷新；当前已显示保存结果，可稍后点击刷新。'));
+  }
   useEffect(()=>{refresh(null).catch(e=>setError(e.message)).finally(()=>setLoading(false));},[]);
   useEffect(()=>{const t=setInterval(()=>{refresh(id).catch(()=>{});},12000);return()=>clearInterval(t);},[id]);
   useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(''),4500);return()=>clearTimeout(t);},[toast]);
@@ -67,7 +84,7 @@ export default function Home(){
   ].map(([title,text],i)=><section className="panel guide-card" key={title}><span>{String(i+1).padStart(2,'0')}</span><h2>{title}</h2><p>{text}</p></section>)}</div></>}
   <footer className="page-footer"><span>RISK RADAR <b>·</b> 让关注持续，让判断有据</span><span>投资监控与提醒工具</span></footer></main></div>
   {toast&&<div role="status" className="toast"><Check size={16}/>{toast}</div>}
-  {editor&&<RuleEditor task={editor.task} config={config} onClose={()=>setEditor(null)} onSaved={async(task:Any)=>{setEditor(null);setId(task.id);setTab('runs');await refresh(task.id);setToast(`规则 v${task.version} 已确认，任务已保存`);}}/>}
+  {editor&&<RuleEditor task={editor.task} config={config} onClose={()=>setEditor(null)} onSaved={saved}/>}
   </div>;
 }
 function Heading({eyebrow,title,description}:Any){return <div className="page-heading"><div><div className="eyebrow">{eyebrow}</div><h1>{title}<span className="heading-dot">.</span></h1><p>{description}</p></div></div>;}
