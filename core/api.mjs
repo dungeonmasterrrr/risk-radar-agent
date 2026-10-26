@@ -1,5 +1,6 @@
 import { searchInstruments, verifyInstrument } from './instruments.mjs';
-import { AppError, defaultRule, SYMBOLS } from './rules.mjs';
+import { AppError, defaultRule, SYMBOLS, validateRule, evaluate } from './rules.mjs';
+import { getSnapshot } from './providers.mjs';
 import { compile } from './agent.mjs';
 import { modelConfiguration } from './models.mjs';
 import { getFuyaoSnapshot } from './fuyao.mjs';
@@ -51,6 +52,12 @@ export async function handleApi(request,db,env={}) {
     if(path[0]==='config'&&request.method==='GET'){const model=modelConfiguration(env);return reply({symbols:SYMBOLS,modelConfigured:model.configured,modelProvider:model.provider,modelName:model.name,fuyaoConfigured:!!env.FUYAO_API_KEY,schedulerConfigured:!!env.SCHEDULER_SECRET||env.PRIVATE_SERVICE_UPDATES==='true',schedulerCadenceSeconds:env.PRIVATE_SERVICE_UPDATES==='true'?3600:15,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'扶摇已支持价格与交易日历直连；公告、热度及 iFinD 尚未直接接入。腾讯行情为实验来源，演示数据不代表真实市场。'});}
     if(path[0]==='instruments'&&request.method==='GET')return reply(await searchInstruments(url.searchParams.get('q'),env));
     if(path[0]==='compile'&&request.method==='POST')return reply(await compile(body.input,env));
+    if(path[0]==='preview'&&request.method==='POST'){
+      const rule=validateRule(body.rule),now=Date.now();
+      if(rule.provider!=='demo')rule.symbol=await verifyInstrument(rule.symbol,env);
+      const snapshot=await getSnapshot(rule,'normal',now,env);
+      return reply({rule,snapshot,evaluation:evaluate(rule,snapshot,now),checkedAt:new Date(now).toISOString()});
+    }
     if(path[0]==='fuyao-check'&&request.method==='POST'){
       const rule=defaultRule();rule.provider='fuyao';rule.schedule.mode='trading';
       const snapshot=await getFuyaoSnapshot(rule,Date.now(),env);

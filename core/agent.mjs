@@ -105,11 +105,11 @@ export async function compile(input, env = {}, fetcher = fetch, now = Date.now()
       trace.push({ tool: 'validate_rule', status: parsed.rule ? 'ok' : 'needs_input', detail: parsed.rule ? '等待用户检查与确认，尚未创建任务' : '需要补充信息' });
       return { ...parsed, mode: 'model', provider: response.provider, model: response.model, trace };
     } catch (error) {
-      const reason = error instanceof ModelError ? error.message : '模型输出未通过规则校验';
+      const reason = error instanceof ModelError || error instanceof AppError ? error.message : '模型输出未通过规则校验';
       trace.push({ tool: 'model_compile', status: 'degraded', detail: `${reason}；降级为受限本地解析器，本次未使用大模型草案` });
     }
   } else trace.push({ tool: 'model_compile', status: 'unconfigured', detail: '未配置模型凭据，使用受限本地解析器；本次未调用大模型' });
   const parsed = localCompile(input,{fuyaoConfigured:!!env.FUYAO_API_KEY,symbol});
   trace.push({ tool: 'local_compile', status: parsed.rule ? 'ok' : 'needs_input', detail: parsed.rule ? '识别明确条件；默认设置需要确认' : '不猜测缺失条件' });
-  return { ...parsed, mode: 'local', trace, defaults: ['默认使用演示数据', '默认每 5 分钟检查', '默认全天运行', '默认冷却 30 分钟', '默认数据有效期 5 分钟'] };
+  return { ...parsed, mode: 'local', trace, defaults: [parsed.rule?.provider==='yahoo'?'Yahoo 实验行情，可能延迟':parsed.rule?.provider==='fuyao'?'扶摇真实行情':'默认使用演示数据', '未指定间隔时默认每 5 分钟检查', '未指定时默认全天运行', '未指定时默认冷却 30 分钟', '未指定时默认数据有效期 5 分钟'] };
 }
