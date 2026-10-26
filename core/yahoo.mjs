@@ -6,7 +6,7 @@ export async function getYahooSnapshot(rule,now,fetcher=fetch){
   const url=`/v8/finance/chart/${encodeURIComponent(rule.symbol.code)}?interval=1d&period1=${from}&period2=${Math.floor(now/1000)+1}`;
   const body=await yahooJson(url,fetcher),result=body.chart?.result?.[0],meta=result?.meta;
   if(meta?.symbol!==rule.symbol.code)throw new AppError('Yahoo 返回标的不匹配或无数据',502);
-  const base={source:'Yahoo Finance · 实验行情（可能延迟，无 SLA）',simulated:false,url:`https://query1.finance.yahoo.com${url}`,observedAt:typeof meta.regularMarketTime==='number'?new Date(meta.regularMarketTime*1000).toISOString():null,fetchedAt:new Date(now).toISOString(),currency:meta.currency,timezone:meta.exchangeTimezoneName,delayMinutes:meta.exchangeDataDelayedBy??null};
+  const base={source:'Yahoo Finance · 实验行情（可能延迟，无 SLA）',simulated:false,url:`${body.sourceOrigin}${url}`,observedAt:typeof meta.regularMarketTime==='number'?new Date(meta.regularMarketTime*1000).toISOString():null,fetchedAt:new Date(now).toISOString(),currency:meta.currency,timezone:meta.exchangeTimezoneName,delayMinutes:meta.exchangeDataDelayedBy??null};
   const current=meta.regularMarketPrice;
   const snapshot={price:{...base,value:current},drawdowns:{}};
   if(typeof current!=='number'||!Number.isFinite(current)||current<=0)throw new AppError('Yahoo 缺少有效最新价',502);

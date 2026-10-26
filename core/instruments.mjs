@@ -3,9 +3,12 @@ import { requestFuyao } from './fuyao.mjs';
 export const NASDAQ100={code:'^NDX',market:'GLOBAL',name:'纳斯达克100',assetType:'INDEX'};
 const supported=new Set(['EQUITY','ETF','INDEX']);
 export async function yahooJson(path,fetcher=fetch){
-  let response;try{response=await fetcher(`https://query1.finance.yahoo.com${path}`,{redirect:'manual',signal:AbortSignal.timeout(12000)});}catch{throw new AppError('Yahoo 行情网络请求失败或超时',502);}
-  if(!response.ok)throw new AppError(`Yahoo 实验行情返回 HTTP ${response.status}`,502);
-  try{return await response.json();}catch{throw new AppError('Yahoo 行情格式无效',502);}
+  const origins=['https://query1.finance.yahoo.com','https://query2.finance.yahoo.com'];
+  for(const [i,origin] of origins.entries()){
+    let response;try{response=await fetcher(`${origin}${path}`,{redirect:'manual',signal:AbortSignal.timeout(8000)});}catch{if(i===0)continue;throw new AppError('Yahoo 两个行情接口均无法连接或超时',502);}
+    if(!response.ok){if(i===0&&[429,502,503,504].includes(response.status))continue;throw new AppError(`Yahoo 实验行情返回 HTTP ${response.status}${i===1?'（两个固定接口均不可用）':''}`,502);}
+    try{const body=await response.json();Object.defineProperty(body,'sourceOrigin',{value:origin});return body;}catch{throw new AppError('Yahoo 行情格式无效',502);}
+  }
 }
 export async function searchInstruments(query,env={},fetcher=fetch){
   const q=typeof query==='string'?query.trim():'';
