@@ -30,8 +30,8 @@ export function validateRule(input) {
   if(!symbol||!['SH','SZ','GLOBAL'].includes(symbol.market)||typeof symbol.name!=='string'||!symbol.name.trim()||symbol.name.length>120)throw new AppError('请选择已核实名称、代码与市场的标的');
   if(typeof symbol.code!=='string'||(symbol.market==='GLOBAL'?!/^[A-Za-z0-9^][A-Za-z0-9.^=-]{0,24}$/.test(symbol.code):!/^\d{6}$/.test(symbol.code)))throw new AppError('标的代码格式无效');
   r.symbol={code:symbol.code,market:symbol.market,name:symbol.name,...(symbol.assetType?{assetType:symbol.assetType}:{})};
-  if(!['demo','tencent','fuyao','yahoo'].includes(r.provider))throw new AppError('该数据来源已移除；请选择扶摇或其他已接入来源');
-  if(r.provider==='yahoo'&&symbol.market!=='GLOBAL'||['fuyao','tencent'].includes(r.provider)&&symbol.market==='GLOBAL')throw new AppError('标的市场与数据来源不匹配');
+  if(!['demo','tencent','fuyao','yahoo','ifind'].includes(r.provider))throw new AppError('该数据来源已移除；请选择扶摇或其他已接入来源');
+  if(r.provider==='yahoo'&&symbol.market!=='GLOBAL'||['fuyao','tencent','ifind'].includes(r.provider)&&symbol.market==='GLOBAL')throw new AppError('标的市场与数据来源不匹配');
   if (!['all', 'any'].includes(r.logic)) throw new AppError('组合条件须为 all 或 any');
   if (!Array.isArray(r.conditions) || r.conditions.length < 1 || r.conditions.length > 8) throw new AppError('请配置 1–8 个条件');
   r.conditions = r.conditions.map((c, i) => {
@@ -52,6 +52,7 @@ export function validateRule(input) {
   });
   if(r.conditions.some(c=>c.type==='drawdown')&&!['yahoo','demo'].includes(r.provider))throw new AppError('回撤条件当前支持 Yahoo 实验行情或演示数据');
   if(r.provider==='yahoo'&&r.conditions.some(c=>!['price','drawdown','calendar'].includes(c.type)))throw new AppError('Yahoo 当前支持价格、回撤与日历条件');
+  if(r.provider==='ifind'&&r.conditions.some(c=>!['price','event','calendar'].includes(c.type)))throw new AppError('iFinD 当前接入价格、公告检索与日历；未提供统一数值热度，不支持热度阈值');
   if(r.provider==='fuyao'&&r.conditions.some(c=>!['price','calendar'].includes(c.type)))throw new AppError('扶摇直连当前仅支持价格与日历条件；公告、热度请选择演示或其他授权来源');
   if (!['always', 'trading'].includes(r.schedule?.mode)) throw new AppError('调度模式无效');
   number(r.schedule.intervalSeconds, 30, 86400, '检查间隔秒');
@@ -87,7 +88,7 @@ export function evaluate(rule, snapshot, now) {
       const truth = now >= Date.parse(c.at);
       return { ...base, truth, reason: truth ? '已到指定提醒时间' : '尚未到指定提醒时间', evidence: { source: '用户确认的日历规则', at: c.at, checkedAt: new Date(now).toISOString() }, identities: truth ? [`calendar:${c.at}`] : [] };
     }
-    const data = c.type==='drawdown'?snapshot.drawdowns?.[c.id]:snapshot[c.type];
+    const data = c.type==='drawdown'?snapshot.drawdowns?.[c.id]:c.type==='event'?(snapshot.events?.[c.id]||snapshot.event):snapshot[c.type];
     if (!data || data.error) return { ...base, reason: data?.error || '来源未提供该类数据', evidence: data || null };
     if (typeof data.source !== 'string' || !data.source.trim()) return { ...base, reason: '缺少可追溯的数据来源', evidence: data };
     const age = (now - Date.parse(data.observedAt)) / 1000;
@@ -95,7 +96,11 @@ export function evaluate(rule, snapshot, now) {
     if (data.conflict) return { ...base, reason: '来源数据存在冲突，本次不采用任一冲突值', evidence: data };
     if (c.type === 'event') {
       if (!Array.isArray(data.items) || data.items.some(e => typeof e.id !== 'string' || !e.id || typeof e.title !== 'string' || !Number.isFinite(Date.parse(e.publishedAt)))) return { ...base, reason: '事件字段缺失或发布时间无效', evidence: data };
-      const matches = data.items.filter(e => e.title.includes(c.keyword) && Date.parse(e.publishedAt) <= now && now - Date.parse(e.publishedAt) <= c.lookbackMinutes * 60000);
+      const relevant=data.items.filter(e=>(data.matchScope==='title-and-excerpt'?`${e.title}\n${e.excerpt||''}`:e.title).includes(c.keyword));
+      const cutoff=now-c.lookbackMinutes*60000;
+      const matches=relevant.filter(e=>Date.parse(e.publishedAt)<=now&&Date.parse(e.publishedAt)>=cutoff);
+      const ambiguous=relevant.some(e=>e.timePrecision==='day'&&Date.parse(e.publishedAt)<cutoff&&Date.parse(e.publishedAt)+86400000>cutoff&&Date.parse(e.publishedAt)<=now);
+      if(!matches.length&&(ambiguous||data.coverage==='semantic'))return {...base,reason:ambiguous?'公告仅提供日期，无法确认是否落在分钟回看窗口内':'本次语义检索未确认命中；检索不保证完整公告覆盖，不能断言不存在事件',evidence:data};
       return { ...base, truth: matches.length > 0, reason: `匹配到 ${matches.length} 条公告`, evidence: data, identities: matches.map(e => `event:${e.id}`) };
     }
     if (typeof data.value !== 'number' || !Number.isFinite(data.value) || data.value < 0) return { ...base, reason: '数值缺失或无效', evidence: data };

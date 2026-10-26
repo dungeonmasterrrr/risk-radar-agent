@@ -1,3 +1,4 @@
+import {createIfindClient, queryIfind} from './ifind.mjs';
 import { searchInstruments, verifyInstrument } from './instruments.mjs';
 import { AppError, defaultRule, SYMBOLS, validateRule, evaluate } from './rules.mjs';
 import { getSnapshot } from './providers.mjs';
@@ -49,7 +50,7 @@ export async function handleApi(request,db,env={}) {
       try {body=JSON.parse(raw);}catch{throw new AppError('JSON 格式无效');}
       if(!body||typeof body!=='object'||Array.isArray(body))throw new AppError('请求格式无效');
     }
-    if(path[0]==='config'&&request.method==='GET'){const model=modelConfiguration(env);return reply({symbols:SYMBOLS,modelConfigured:model.configured,modelProvider:model.provider,modelName:model.name,fuyaoConfigured:!!env.FUYAO_API_KEY,schedulerConfigured:!!env.SCHEDULER_SECRET||env.PRIVATE_SERVICE_UPDATES==='true',schedulerCadenceSeconds:env.PRIVATE_SERVICE_UPDATES==='true'?3600:15,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'扶摇已支持价格与交易日历直连；公告、热度及 iFinD 尚未直接接入。腾讯行情为实验来源，演示数据不代表真实市场。'});}
+    if(path[0]==='config'&&request.method==='GET'){const model=modelConfiguration(env);return reply({symbols:SYMBOLS,modelConfigured:model.configured,modelProvider:model.provider,modelName:model.name,fuyaoConfigured:!!env.FUYAO_API_KEY,ifindConfigured:!!env.IFIND_MCP_API_KEY,schedulerConfigured:!!env.SCHEDULER_SECRET||env.PRIVATE_SERVICE_UPDATES==='true',schedulerCadenceSeconds:env.PRIVATE_SERVICE_UPDATES==='true'?3600:15,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'扶摇已支持价格与交易日历直连；iFinD已接入价格与公告语义检索；数值热度尚未接入。腾讯行情为实验来源，演示数据不代表真实市场。'});}
     if(path[0]==='instruments'&&request.method==='GET')return reply(await searchInstruments(url.searchParams.get('q'),env));
     if(path[0]==='compile'&&request.method==='POST')return reply(await compile(body.input,env));
     if(path[0]==='preview'&&request.method==='POST'){
@@ -58,6 +59,11 @@ export async function handleApi(request,db,env={}) {
       const snapshot=await getSnapshot(rule,'normal',now,env);
       return reply({rule,snapshot,evaluation:evaluate(rule,snapshot,now),checkedAt:new Date(now).toISOString()});
     }
+    if(path[0]==='ifind-check'&&request.method==='POST'){
+      const client=createIfindClient(env);const news=await client.list('news');
+      return reply({connected:true,tools:news.map(t=>({name:t.name,description:t.description})),capabilities:{price:true,noticeSearch:true,newsSearch:true,hotspotSearch:true,numericHeat:false}});
+    }
+    if(path[0]==='ifind-query'&&request.method==='POST')return reply(await queryIfind(body,env));
     if(path[0]==='fuyao-check'&&request.method==='POST'){
       const rule=defaultRule();rule.provider='fuyao';rule.schedule.mode='trading';
       const snapshot=await getFuyaoSnapshot(rule,Date.now(),env);

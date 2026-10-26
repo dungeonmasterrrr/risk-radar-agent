@@ -1,3 +1,4 @@
+import { getIfindSnapshot } from './ifind.mjs';
 import { AppError } from './rules.mjs';
 import { getYahooSnapshot } from './yahoo.mjs';
 import { getFuyaoSnapshot } from './fuyao.mjs';
@@ -28,10 +29,11 @@ export function demoSnapshot(rule, scenario, now) {
   };
 }
 export async function getSnapshot(rule, scenario, now, env = {}, fetcher = fetch) {
-  if(!['demo','fuyao','yahoo','tencent'].includes(rule.provider))throw new AppError('该数据来源已移除，请编辑任务选择已接入来源',400);
+  if(!['demo','fuyao','yahoo','tencent','ifind'].includes(rule.provider))throw new AppError('该数据来源已移除，请编辑任务选择已接入来源',400);
   if (rule.provider === 'demo') return demoSnapshot(rule, scenario, now);
   if (rule.provider === 'fuyao') return getFuyaoSnapshot(rule,now,env,fetcher);
   if (rule.conditions.every(c => c.type === 'calendar')) return {};
+  if(rule.provider==='ifind')return getIfindSnapshot(rule,now,env,fetcher);
   if(rule.provider==='yahoo')return getYahooSnapshot(rule,now,fetcher);
   if(rule.provider!=='tencent')throw new AppError('该数据来源已移除，请编辑任务选择已接入来源',400);
   const ticker = `${rule.symbol.market.toLowerCase()}${rule.symbol.code}`;
