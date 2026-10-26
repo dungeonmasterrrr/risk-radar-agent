@@ -3,7 +3,7 @@ const ORIGIN='https://fuyao.aicubes.cn';
 const dateKey=ms=>new Date(ms+8*3600000).toISOString().slice(0,10).replaceAll('-','');
 const errors={2001:'扶摇密钥无效或未认证',2003:'扶摇账号尚无此数据权限',3001:'扶摇未找到该标的',3002:'扶摇数据尚未就绪',3004:'扶摇当前接口不支持该标的类型',4001:'扶摇请求受限，等待退避重试',5002:'扶摇上游请求超时',5003:'扶摇数据源暂不可用'};
 function validTimestamp(value){return typeof value==='number'&&Number.isFinite(value)&&value>0&&value<=8640000000000000;}
-async function request(path,query,key,fetcher){
+export async function requestFuyao(path,query,key,fetcher){
   const url=new URL(path,ORIGIN);for(const [k,v]of Object.entries(query))url.searchParams.set(k,v);
   let response;
   try{response=await fetcher(url.href,{headers:{'X-api-key':key},redirect:'manual',signal:AbortSignal.timeout(12000)});}
@@ -28,10 +28,10 @@ export async function getFuyaoSnapshot(rule,now,env={},fetcher=fetch){
   const key=env.FUYAO_API_KEY;
   if(needsPrice){
     try{
-      const index=rule.symbol.market==='SH'&&rule.symbol.code==='000300';
+      const index=rule.symbol.assetType==='a-share-index'||rule.symbol.market==='SH'&&rule.symbol.code==='000300';
       const path=index?'/api/a-share-index/prices/snapshot':'/api/a-share/prices/snapshot';
       const thscode=`${rule.symbol.code}.${rule.symbol.market}`;
-      const result=await request(path,{thscodes:thscode},key,fetcher);
+      const result=await requestFuyao(path,{thscodes:thscode},key,fetcher);
       const b=base(result,now,index?'扶摇 · 指数行情快照':'扶摇 · A股行情快照');
       const matches=result.data.item.filter(row=>row?.thscode===thscode);
       if(matches.length!==1){snapshot.price={...b,error:'扶摇快照标的缺失、重复或代码不匹配'};}
@@ -46,7 +46,7 @@ export async function getFuyaoSnapshot(rule,now,env={},fetcher=fetch){
   }
   if(needsCalendar){
     try{
-      const result=await request('/api/a-share/calendar/trading-days',{},key,fetcher);
+      const result=await requestFuyao('/api/a-share/calendar/trading-days',{},key,fetcher);
       const b=base(result,now,'扶摇 · A股交易日历');
       const today=dateKey(now);
       const items=result.data.item;

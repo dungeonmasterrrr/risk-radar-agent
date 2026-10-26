@@ -1,4 +1,5 @@
 import { AppError } from './rules.mjs';
+import { getYahooSnapshot } from './yahoo.mjs';
 import { getFuyaoSnapshot } from './fuyao.mjs';
 export const SCENARIOS = ['normal', 'match', 'clear', 'stale', 'conflict', 'failure', 'missing'];
 export async function fetchJson(url, options = {}, fetcher = fetch) {
@@ -22,23 +23,17 @@ export function demoSnapshot(rule, scenario, now) {
     price: { ...base, value: scenario === 'missing' ? null : value(priceRule, 1388), currency: 'CNY', conflict: scenario === 'conflict', alternatives: scenario === 'conflict' ? [1388, 1412] : undefined },
     heat: { ...base, value: value(heatRule, 72), metric: '演示热度指数（自定义 0–100）', conflict: scenario === 'conflict' },
     event: { ...base, items: scenario === 'clear' ? [] : [{ id: 'demo-announcement-001', title: `${rule.symbol.name}：关于${keyword}事项的演示公告`, publishedAt: new Date(now - 60000).toISOString(), url: null }], conflict: scenario === 'conflict' },
+    drawdowns:Object.fromEntries(rule.conditions.filter(c=>c.type==='drawdown').map(c=>[c.id,{...base,value:scenario==='match'?c.value+1:scenario==='clear'?Math.max(0,c.value-1):5,lookbackDays:c.lookbackDays,simulated:true,conflict:scenario==='conflict',...(scenario==='missing'?{error:'模拟历史缺失'}:{})}])),
     tradingDay: true,
   };
 }
 export async function getSnapshot(rule, scenario, now, env = {}, fetcher = fetch) {
+  if(!['demo','fuyao','yahoo','tencent'].includes(rule.provider))throw new AppError('该数据来源已移除，请编辑任务选择已接入来源',400);
   if (rule.provider === 'demo') return demoSnapshot(rule, scenario, now);
   if (rule.provider === 'fuyao') return getFuyaoSnapshot(rule,now,env,fetcher);
   if (rule.conditions.every(c => c.type === 'calendar')) return {};
-  if (rule.provider === 'relay') {
-    if (!env.DATA_RELAY_URL) throw new AppError('尚未配置授权数据中继 DATA_RELAY_URL', 503);
-    const url = new URL(env.DATA_RELAY_URL);
-    if (url.protocol !== 'https:') throw new AppError('授权数据中继必须使用 HTTPS', 503);
-    url.searchParams.set('code', rule.symbol.code); url.searchParams.set('market', rule.symbol.market);
-    const result = await fetchJson(url, { headers: env.DATA_RELAY_TOKEN ? { Authorization: `Bearer ${env.DATA_RELAY_TOKEN}` } : {} }, fetcher);
-    if (!result || typeof result !== 'object' || Array.isArray(result)) throw new AppError('数据中继格式无效', 502);
-    for (const k of ['price', 'heat', 'event']) if (result[k]) { result[k].fetchedAt = new Date(now).toISOString(); result[k].simulated = false; }
-    return result;
-  }
+  if(rule.provider==='yahoo')return getYahooSnapshot(rule,now,fetcher);
+  if(rule.provider!=='tencent')throw new AppError('该数据来源已移除，请编辑任务选择已接入来源',400);
   const ticker = `${rule.symbol.market.toLowerCase()}${rule.symbol.code}`;
   const response = await fetcher(`https://qt.gtimg.cn/q=${ticker}`, { signal: AbortSignal.timeout(10000), headers: { 'User-Agent': 'RiskRadar/1.0' } });
   if (!response.ok) throw new AppError(`公开行情接口 HTTP ${response.status}`, 502);

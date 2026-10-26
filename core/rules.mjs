@@ -9,6 +9,9 @@ export const SYMBOLS = [
   { code: '000300', market: 'SH', name: '沪深300', aliases: ['沪深三百'] },
 ];
 export function resolveSymbol(text) {
+  const qualified=text.match(/\b(SH|SZ)(\d{6})\b|\b(\d{6})\.(SH|SZ)\b/i);
+  if(qualified){const market=(qualified[1]||qualified[4]).toUpperCase(),code=qualified[2]||qualified[3];return SYMBOLS.find(s=>s.code===code&&s.market===market)||null;}
+  if(/(?<!\d)000001(?!\d)/.test(text)&&!text.includes('平安银行'))return null;
   const matches = SYMBOLS.filter(s => [s.name, ...s.aliases].some(n => text.includes(n)) || new RegExp(`(?<!\\d)${s.code}(?!\\d)`).test(text));
   return matches.length === 1 ? matches[0] : null;
 }
@@ -23,10 +26,12 @@ const text = (v, max, label) => {
 export function validateRule(input) {
   if (!input || typeof input !== 'object') throw new AppError('规则格式错误');
   const r = structuredClone(input);
-  const symbol = SYMBOLS.find(s => s.code === r.symbol?.code && s.market === r.symbol?.market);
-  if (!symbol) throw new AppError('请选择已核对代码与市场的标的');
-  r.symbol = { code: symbol.code, market: symbol.market, name: symbol.name };
-  if (!['demo', 'tencent', 'fuyao', 'relay'].includes(r.provider)) throw new AppError('不支持的数据来源');
+  const symbol=r.symbol;
+  if(!symbol||!['SH','SZ','GLOBAL'].includes(symbol.market)||typeof symbol.name!=='string'||!symbol.name.trim()||symbol.name.length>120)throw new AppError('请选择已核实名称、代码与市场的标的');
+  if(typeof symbol.code!=='string'||(symbol.market==='GLOBAL'?!/^[A-Za-z0-9^][A-Za-z0-9.^=-]{0,24}$/.test(symbol.code):!/^\d{6}$/.test(symbol.code)))throw new AppError('标的代码格式无效');
+  r.symbol={code:symbol.code,market:symbol.market,name:symbol.name,...(symbol.assetType?{assetType:symbol.assetType}:{})};
+  if(!['demo','tencent','fuyao','yahoo'].includes(r.provider))throw new AppError('该数据来源已移除；请选择扶摇或其他已接入来源');
+  if(r.provider==='yahoo'&&symbol.market!=='GLOBAL'||['fuyao','tencent'].includes(r.provider)&&symbol.market==='GLOBAL')throw new AppError('标的市场与数据来源不匹配');
   if (!['all', 'any'].includes(r.logic)) throw new AppError('组合条件须为 all 或 any');
   if (!Array.isArray(r.conditions) || r.conditions.length < 1 || r.conditions.length > 8) throw new AppError('请配置 1–8 个条件');
   r.conditions = r.conditions.map((c, i) => {
@@ -35,6 +40,7 @@ export function validateRule(input) {
       if (!['lt', 'lte', 'gt', 'gte'].includes(c.op)) throw new AppError('比较方式无效');
       return { id, type: c.type, op: c.op, value: number(c.value, 0, 1e9, '阈值') };
     }
+    if(c.type==='drawdown')return {id,type:'drawdown',op:'gte',value:number(c.value,0.01,100,'回撤百分比'),lookbackDays:number(c.lookbackDays,7,3650,'回看自然日')};
     if (c.type === 'event') return { id, type: 'event', keyword: text(c.keyword, 40, '事件关键词'), lookbackMinutes: number(c.lookbackMinutes, 1, 10080, '事件回看分钟') };
     if (c.type === 'calendar') {
       if (typeof c.at !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:\+08:00|Z)$/.test(c.at) || !Number.isFinite(Date.parse(c.at))) throw new AppError('日历时间须包含日期、时刻与时区');
@@ -44,6 +50,8 @@ export function validateRule(input) {
     }
     throw new AppError('不支持的条件类型');
   });
+  if(r.conditions.some(c=>c.type==='drawdown')&&!['yahoo','demo'].includes(r.provider))throw new AppError('回撤条件当前支持 Yahoo 实验行情或演示数据');
+  if(r.provider==='yahoo'&&r.conditions.some(c=>!['price','drawdown','calendar'].includes(c.type)))throw new AppError('Yahoo 当前支持价格、回撤与日历条件');
   if(r.provider==='fuyao'&&r.conditions.some(c=>!['price','calendar'].includes(c.type)))throw new AppError('扶摇直连当前仅支持价格与日历条件；公告、热度请选择演示或其他授权来源');
   if (!['always', 'trading'].includes(r.schedule?.mode)) throw new AppError('调度模式无效');
   number(r.schedule.intervalSeconds, 30, 86400, '检查间隔秒');
@@ -56,6 +64,7 @@ export function defaultRule(symbol = SYMBOLS[0]) {
 }
 export const OPS = { lt: '<', lte: '≤', gt: '>', gte: '≥' };
 export function conditionLabel(c) {
+  if(c.type==='drawdown')return `较近 ${c.lookbackDays} 个自然日日线最高价回撤 ≥ ${c.value}%`;
   if (c.type === 'price') return `最新价 ${OPS[c.op]} ${c.value} 元`;
   if (c.type === 'heat') return `热度指数 ${OPS[c.op]} ${c.value}`;
   if (c.type === 'event') return `近 ${c.lookbackMinutes} 分钟公告含「${c.keyword}」`;
@@ -78,7 +87,7 @@ export function evaluate(rule, snapshot, now) {
       const truth = now >= Date.parse(c.at);
       return { ...base, truth, reason: truth ? '已到指定提醒时间' : '尚未到指定提醒时间', evidence: { source: '用户确认的日历规则', at: c.at, checkedAt: new Date(now).toISOString() }, identities: truth ? [`calendar:${c.at}`] : [] };
     }
-    const data = snapshot[c.type];
+    const data = c.type==='drawdown'?snapshot.drawdowns?.[c.id]:snapshot[c.type];
     if (!data || data.error) return { ...base, reason: data?.error || '来源未提供该类数据', evidence: data || null };
     if (typeof data.source !== 'string' || !data.source.trim()) return { ...base, reason: '缺少可追溯的数据来源', evidence: data };
     const age = (now - Date.parse(data.observedAt)) / 1000;

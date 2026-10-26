@@ -1,3 +1,4 @@
+import { searchInstruments, verifyInstrument } from './instruments.mjs';
 import { AppError, defaultRule, SYMBOLS } from './rules.mjs';
 import { compile } from './agent.mjs';
 import { modelConfiguration } from './models.mjs';
@@ -47,7 +48,8 @@ export async function handleApi(request,db,env={}) {
       try {body=JSON.parse(raw);}catch{throw new AppError('JSON 格式无效');}
       if(!body||typeof body!=='object'||Array.isArray(body))throw new AppError('请求格式无效');
     }
-    if(path[0]==='config'&&request.method==='GET'){const model=modelConfiguration(env);return reply({symbols:SYMBOLS,modelConfigured:model.configured,modelProvider:model.provider,modelName:model.name,fuyaoConfigured:!!env.FUYAO_API_KEY,relayConfigured:!!env.DATA_RELAY_URL,schedulerConfigured:!!env.SCHEDULER_SECRET||env.PRIVATE_SERVICE_UPDATES==='true',schedulerCadenceSeconds:env.PRIVATE_SERVICE_UPDATES==='true'?3600:15,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'扶摇已支持价格与交易日历直连；公告、热度及 iFinD 尚未直接接入。腾讯行情为实验来源，演示数据不代表真实市场。'});}
+    if(path[0]==='config'&&request.method==='GET'){const model=modelConfiguration(env);return reply({symbols:SYMBOLS,modelConfigured:model.configured,modelProvider:model.provider,modelName:model.name,fuyaoConfigured:!!env.FUYAO_API_KEY,schedulerConfigured:!!env.SCHEDULER_SECRET||env.PRIVATE_SERVICE_UPDATES==='true',schedulerCadenceSeconds:env.PRIVATE_SERVICE_UPDATES==='true'?3600:15,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'扶摇已支持价格与交易日历直连；公告、热度及 iFinD 尚未直接接入。腾讯行情为实验来源，演示数据不代表真实市场。'});}
+    if(path[0]==='instruments'&&request.method==='GET')return reply(await searchInstruments(url.searchParams.get('q'),env));
     if(path[0]==='compile'&&request.method==='POST')return reply(await compile(body.input,env));
     if(path[0]==='fuyao-check'&&request.method==='POST'){
       const rule=defaultRule();rule.provider='fuyao';rule.schedule.mode='trading';
@@ -73,10 +75,10 @@ export async function handleApi(request,db,env={}) {
     }
     if(path[0]==='tasks') {
       if(path.length===1&&request.method==='GET')return reply({tasks:await store.list(owner)});
-      if(path.length===1&&request.method==='POST')return reply({task:await store.create(owner,body)},201);
+      if(path.length===1&&request.method==='POST'){if(body.rule?.provider!=='demo'&&body.rule?.symbol)body.rule.symbol=await verifyInstrument(body.rule.symbol,env);return reply({task:await store.create(owner,body)},201);}
       const id=path[1];
       if(id&&path.length===2&&request.method==='GET')return reply(await store.detail(owner,id));
-      if(id&&path.length===2&&request.method==='PATCH')return reply({task:await store.edit(owner,id,body)});
+      if(id&&path.length===2&&request.method==='PATCH'){if(body.rule?.provider!=='demo'&&body.rule?.symbol)body.rule.symbol=await verifyInstrument(body.rule.symbol,env);return reply({task:await store.edit(owner,id,body)});}
       if(id&&path[2]==='run'&&request.method==='POST')return reply(await runTask(store,owner,id,{env,key:request.headers.get('idempotency-key')||crypto.randomUUID()}));
       if(id&&path[2]==='action'&&request.method==='POST')return reply({task:await store.action(owner,id,body.action,body.value)});
     }

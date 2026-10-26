@@ -29,15 +29,15 @@ export async function runTask(store,owner,id,{now=Date.now(),key=crypto.randomUU
   const rule=JSON.parse(claimed.rule_json);const state=JSON.parse(claimed.state_json);
   let snapshot={},evaluation,outcome;
   try {
-    if(rule.schedule.mode==='trading'&&!marketSession(now)) {
+    if(rule.schedule.mode==='trading'&&rule.symbol.market!=='GLOBAL'&&!marketSession(now)) {
       outcome={state:{...state,health:'healthy',lastRunAt:now,lastResult:'skipped'},result:'skipped',decision:'outside_session',explanation:'当前不在 A 股工作日连续交易时段，跳过条件计算；工作日判断不替代官方交易日历'};
     } else {
       try { snapshot=await getSnapshot(rule,claimed.scenario,now,env,fetcher); }
-      catch(e) {snapshot={price:{error:e.message},event:{error:e.message},heat:{error:e.message},tradingCalendar:{error:e.message}};}
+      catch(e) {snapshot={price:{error:e.message},event:{error:e.message},heat:{error:e.message},drawdowns:Object.fromEntries(rule.conditions.filter(c=>c.type==='drawdown').map(c=>[c.id,{error:e.message}])),tradingCalendar:{error:e.message}};}
       if(rule.schedule.mode==='trading'&&rule.provider!=='demo'&&typeof snapshot.tradingDay!=='boolean') {
-        evaluation={truth:null,degraded:true,results:[{truth:null,reason:snapshot.tradingCalendar?.error||'缺少可用的授权交易日历，无法确认是否为交易日；可配置扶摇直连或授权中继',evidence:snapshot.tradingCalendar||null}]};
+        evaluation={truth:null,degraded:true,results:[{truth:null,reason:'交易日历不可用：'+(snapshot.tradingCalendar?.error||'无法确认是否为交易日；请选择支持交易日历的来源'),evidence:snapshot.tradingCalendar||null}]};
       } else if(rule.schedule.mode==='trading'&&snapshot.tradingDay===false) {
-        outcome={state:{...state,health:'healthy',lastRunAt:now,lastResult:'skipped'},result:'skipped',decision:'non_trading_day',explanation:'授权交易日历显示为非交易日，跳过检查'};
+        outcome={state:{...state,health:'healthy',lastRunAt:now,lastResult:'skipped'},result:'skipped',decision:'non_trading_day',explanation:'数据源显示当前不在交易时段或不是交易日，跳过检查'};
       } else evaluation=evaluate(rule,snapshot,now);
       if(!outcome) outcome=decide(state,evaluation,rule,now);
     }

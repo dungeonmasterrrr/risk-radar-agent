@@ -1,67 +1,18 @@
-# 数据接入契约
+# 行情能力与数据口径
 
-## 演示适配器
+五个原有标的仅是快捷示例。GET /api/radar/instruments?q=名称或代码 查询数据目录；创建、编辑真实任务会重新核实标的。
 
-`provider=demo` 提供确定性价格、公告与热度。记录 `simulated=true`，界面显示演示标签。`match`／`clear` 根据当前阈值构造满足或恢复场景；`stale`、`conflict`、`failure`、`missing` 验证异常。数值、公告和时间均为模拟，不代表真实市场。
+- 扶摇：meta/tickers/search 查询目录；a-share、a-share-index 对应各自快照接口。ETF 等目录可查询，但当前不能作为扶摇行情监控。使用服务端 FUYAO_API_KEY。
+- Yahoo Finance：固定 HTTPS 域名的 search 与 chart 实验接口，支持股票、ETF、指数。纳斯达克100为 ^NDX，不是境内纳指 ETF。公开行情可能延迟、限流或不可用，无 SLA。
+- 腾讯：保留实验价格接入。
+- 演示：明确标记模拟来源。
 
-## 腾讯公开行情（实验）
+授权数据中继已移除。旧任务历史保留；使用旧来源的任务会要求编辑迁移，不读取旧中继配置，不回退成模拟行情。iFinD 尚未接入。
 
-只请求固定域名 `https://qt.gtimg.cn/q=<market><code>`，校验股票代码、价格格式和 14 位来源时间。使用 GB18030 解码；来源时间按北京时间解析。原始价格、代码和时间字段保存在执行证据中。
+回撤条件 type=drawdown，value=百分比，lookbackDays=自然日。基准是近指定自然日窗口内未复权日线最高价，包含当前价；公式 (peak-current)/peak*100。当前支持 Yahoo 与演示。不是创建以来、全部历史高点或收盘价回撤。记录最高价、时间、当前价、窗口和点数；历史缺失、严重间断、过短或最新价过期均无法判断。日线不能精确到窗口首日的分钟边界。
 
-该公开接口无 SLA，字段可能改变、可能限流，未验证商业再分发许可。不能作为正式授权数据替代品。返回上一交易日数据时不将抓取时间视为行情时间，不自动放宽新鲜度要求。
+observedAt 为行情来源时间，fetchedAt 为抓取时间。抓取成功不能刷新过期行情。闭市数据保留原时间，默认有效期300秒下不触发。未知延迟不宣称实时。全球标的使用上游交易时段，不套用A股时钟。
 
-## 扶摇直接接入
+规则每300秒是目标检查频率。当前 Sites 后台任务每小时一次；本地独立调度器每15秒扫描到期任务。云端五分钟执行需常驻调度服务。检查频率不改变行情延迟。
 
-设置 FUYAO_API_KEY 后可直接访问扶摇股票／指数行情和交易日历，不需要部署中继。配置、字段口径与真实验证记录见 [FUYAO_SETUP.md](FUYAO_SETUP.md)。密钥已配置只说明字段齐全，权限和数据仍以实际请求为准。
-
-## 其他授权数据中继（包括尚未接入的 iFinD）
-
-如果另有授权服务，可实现下述标准化 HTTP 契约。它是可选适配入口，不是扶摇原生地址，也不等同于直接接入 iFinD。服务端配置：
-
-```dotenv
-DATA_RELAY_URL=https://your-authorized-service.example/snapshot
-DATA_RELAY_TOKEN=<server-side-secret>
-```
-
-请求：`GET <DATA_RELAY_URL>?code=600519&market=SH`。如有 token，使用服务端 Authorization Bearer 头。该 URL 只能由服务端配置，访客不能提交任意 URL。
-
-响应示例（示例数值不是真实行情）：
-
-```json
-{
-  "tradingDay": true,
-  "price": {
-    "value": 1388,
-    "currency": "CNY",
-    "source": "授权数据产品及字段名",
-    "url": "https://licensed-source.example/evidence/123",
-    "observedAt": "2026-10-26T10:00:00+08:00",
-    "conflict": false
-  },
-  "event": {
-    "source": "授权公告数据产品",
-    "observedAt": "2026-10-26T10:00:00+08:00",
-    "items": [{
-      "id": "globally-stable-announcement-id",
-      "title": "关于回购的公告（契约示例）",
-      "publishedAt": "2026-10-26T09:45:00+08:00",
-      "url": "https://licensed-source.example/announcement/123"
-    }]
-  },
-  "heat": {
-    "value": 82,
-    "metric": "明确说明统计口径、范围及单位",
-    "source": "授权热度数据产品",
-    "observedAt": "2026-10-26T10:00:00+08:00"
-  }
-}
-```
-
-- `observedAt` 是来源数据时间，不是本次中继请求的时间。应用另外记录 fetchedAt。
-- 每类数据都必须有非空 source 与有效来源时间；缺失不参与正常判断。
-- 事件 ID 必须稳定，不得每次请求重新生成；publishedAt 必须准确并带时区。空 items 表示成功查询但没有事件；接口失败应返回错误状态，不能用空列表掩盖。
-- `conflict=true` 时记录 alternatives 等可追溯内容，规则返回未知，不选择冲突值。
-- 允许每类数据返回 `{ "error": "可向用户展示的错误" }`，不要含 token、内部路径或敏感响应体。
-- `tradingDay` 仅在请求日期匹配的授权交易日历下返回布尔值。真实 trading 模式缺少该值时降级；演示交易日历只用于演示。
-- 缺少价格、事件或热度时，对应条件未知；纯用户日历提醒不依赖行情来源。
-- 中继需自行处理许可、鉴权、缓存、限流、上游映射和响应大小控制。生产化前仍需完成与真实服务的联调。
+扶摇配置与字段说明见 [FUYAO_SETUP.md](FUYAO_SETUP.md)。接口失败不切换模拟来源。
