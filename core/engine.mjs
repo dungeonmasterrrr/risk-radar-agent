@@ -33,9 +33,9 @@ export async function runTask(store,owner,id,{now=Date.now(),key=crypto.randomUU
       outcome={state:{...state,health:'healthy',lastRunAt:now,lastResult:'skipped'},result:'skipped',decision:'outside_session',explanation:'当前不在 A 股工作日连续交易时段，跳过条件计算；工作日判断不替代官方交易日历'};
     } else {
       try { snapshot=await getSnapshot(rule,claimed.scenario,now,env,fetcher); }
-      catch(e) {snapshot={price:{error:e.message},event:{error:e.message},heat:{error:e.message}};}
+      catch(e) {snapshot={price:{error:e.message},event:{error:e.message},heat:{error:e.message},tradingCalendar:{error:e.message}};}
       if(rule.schedule.mode==='trading'&&rule.provider!=='demo'&&typeof snapshot.tradingDay!=='boolean') {
-        evaluation={truth:null,degraded:true,results:[{truth:null,reason:'缺少授权交易日历，无法确认是否为交易日；需配置数据中继',evidence:null}]};
+        evaluation={truth:null,degraded:true,results:[{truth:null,reason:snapshot.tradingCalendar?.error||'缺少可用的授权交易日历，无法确认是否为交易日；可配置扶摇直连或授权中继',evidence:snapshot.tradingCalendar||null}]};
       } else if(rule.schedule.mode==='trading'&&snapshot.tradingDay===false) {
         outcome={state:{...state,health:'healthy',lastRunAt:now,lastResult:'skipped'},result:'skipped',decision:'non_trading_day',explanation:'授权交易日历显示为非交易日，跳过检查'};
       } else evaluation=evaluate(rule,snapshot,now);
@@ -61,7 +61,10 @@ export async function runDue(store,env={},now=Date.now(),fetcher=fetch,source='s
   await store.heartbeat(now,source);
   const due=await store.all('SELECT id,owner,next_run_at FROM tasks WHERE status=? AND next_run_at<=? AND (lease_until IS NULL OR lease_until<=?) ORDER BY next_run_at LIMIT 12','active',now,now);
   const results=[];
+  const startedAt=Date.now();
   for(let offset=0;offset<due.length;offset+=4) {
+    // Leave unclaimed work for the next tick instead of overrunning the writer.
+    if(offset>0&&Date.now()-startedAt>=20000)break;
     const batch=await Promise.all(due.slice(offset,offset+4).map(async t=>{
       try {const r=await runTask(store,t.owner,t.id,{now,key:`due:${t.next_run_at}`,env,fetcher,scheduled:true});return {id:t.id,result:r.run.result};}
       catch(e) {return {id:t.id,error:e instanceof AppError?e.message:'执行失败，等待下一轮重试'};}

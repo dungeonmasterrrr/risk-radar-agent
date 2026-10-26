@@ -26,7 +26,7 @@ export function validateRule(input) {
   const symbol = SYMBOLS.find(s => s.code === r.symbol?.code && s.market === r.symbol?.market);
   if (!symbol) throw new AppError('请选择已核对代码与市场的标的');
   r.symbol = { code: symbol.code, market: symbol.market, name: symbol.name };
-  if (!['demo', 'tencent', 'relay'].includes(r.provider)) throw new AppError('不支持的数据来源');
+  if (!['demo', 'tencent', 'fuyao', 'relay'].includes(r.provider)) throw new AppError('不支持的数据来源');
   if (!['all', 'any'].includes(r.logic)) throw new AppError('组合条件须为 all 或 any');
   if (!Array.isArray(r.conditions) || r.conditions.length < 1 || r.conditions.length > 8) throw new AppError('请配置 1–8 个条件');
   r.conditions = r.conditions.map((c, i) => {
@@ -44,6 +44,7 @@ export function validateRule(input) {
     }
     throw new AppError('不支持的条件类型');
   });
+  if(r.provider==='fuyao'&&r.conditions.some(c=>!['price','calendar'].includes(c.type)))throw new AppError('扶摇直连当前仅支持价格与日历条件；公告、热度请选择演示或其他授权来源');
   if (!['always', 'trading'].includes(r.schedule?.mode)) throw new AppError('调度模式无效');
   number(r.schedule.intervalSeconds, 30, 86400, '检查间隔秒');
   number(r.cooldownSeconds, 0, 604800, '冷却秒');

@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-26T00:38:38.415Z",
+  "httpStatus": 200,
+  "code": 0,
+  "requestId": "099ec5ce95b64afd818ecc3fb637cc2a",
+  "timestamp": 1792975115811,
+  "count": 242,
+  "first": {
+    "date_ms": 1761494400000,
+    "date": "20251027"
+  },
+  "last": {
+    "date_ms": 1792944000000,
+    "date": "20261026"
+  },
+  "includesToday": true
+}

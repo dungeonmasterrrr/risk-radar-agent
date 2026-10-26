@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+const {chromium}=await import(process.env.PLAYWRIGHT_IMPORT||'playwright');
+const origin=process.env.RADAR_ORIGIN||'http://127.0.0.1:5173';
+const out=new URL('../outputs/fuyao-qa/',import.meta.url);await mkdir(out,{recursive:true});
+const browser=await chromium.launch({headless:true,...(process.env.BROWSER_EXECUTABLE?{executablePath:process.env.BROWSER_EXECUTABLE}:{})});
+const context=await browser.newContext({viewport:{width:1440,height:1050},locale:'zh-CN'});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+const report={testedAt:new Date().toISOString(),checks:[]};
+try{
+  await page.goto(origin,{waitUntil:'networkidle'});
+  await page.getByRole('button',{name:'创建监控',exact:true}).click();
+  await page.getByRole('button',{name:/直接使用结构化编辑器/}).click();
+  await page.getByLabel('任务名称',{exact:true}).fill('扶摇接入验收');
+  await page.getByLabel('数据来源',{exact:true}).selectOption('fuyao');
+  await page.getByText('扶摇直连仅支持价格与日历。',{exact:false}).waitFor();
+  await page.getByRole('checkbox').check();await page.getByRole('button',{name:'确认并启用'}).click();
+  await page.getByRole('heading',{name:'扶摇接入验收',exact:true}).waitFor();
+  await page.getByRole('button',{name:'立即检查',exact:true}).click();await page.locator('.run-record').first().waitFor();
+  await page.locator('.run-record').first().locator('summary').first().click();
+  await page.getByText('查看原始快照与追溯标识').first().click();
+  const raw=await page.locator('.raw-evidence pre').first().textContent();assert.ok(raw.includes('fuyao.aicubes.cn'));assert.ok(raw.includes('requestId'));
+  const evidence=JSON.parse(raw);report.checks.push({name:'真实数据来源选择、确认启用、检查与证据',passed:true,runId:evidence.runId,snapshot:evidence.snapshot});
+  await page.screenshot({path:fileURLToPath(new URL('task-evidence.png',out)),fullPage:true});
+  await page.getByRole('button',{name:'暂停',exact:true}).click();await page.getByRole('button',{name:'恢复',exact:true}).waitFor();
+  await page.getByRole('button',{name:'运行与数据',exact:true}).click();await page.getByText('扶摇密钥已配置',{exact:true}).waitFor();assert.equal(await page.getByText('中继未配置',{exact:true}).count(),0);
+  await page.getByRole('button',{name:'检查扶摇连接'}).click();await page.getByText('行情接口：正常；交易日历：正常。',{exact:true}).waitFor();
+  await page.screenshot({path:fileURLToPath(new URL('data-status-desktop.png',out)),fullPage:true});
+  await page.setViewportSize({width:390,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth),false);
+  await page.screenshot({path:fileURLToPath(new URL('data-status-mobile.png',out)),fullPage:true});
+  report.checks.push({name:'扶摇配置状态及手机布局',passed:true});assert.deepEqual(errors,[]);report.pageErrors=errors;
+  await writeFile(new URL('results.json',out),JSON.stringify(report,null,2));console.log(JSON.stringify({passed:report.checks.length,pageErrors:errors.length}));
+}finally{await browser.close();}

@@ -8,6 +8,7 @@ declare namespace Cloudflare {
     MODEL_PROVIDER?: string;
     GEMINI_API_KEY?: string;
     GEMINI_MODEL?: string;
+    FUYAO_API_KEY?: string;
     DATA_RELAY_URL?: string;
     DATA_RELAY_TOKEN?: string;
     SCHEDULER_SECRET?: string;

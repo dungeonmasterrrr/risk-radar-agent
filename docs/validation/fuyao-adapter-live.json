@@ -1,0 +1,69 @@
+{
+  "testedAt": "2026-10-26T00:45:27.572Z",
+  "provider": "fuyao",
+  "interfaceVerified": true,
+  "snapshot": {
+    "price": {
+      "source": "扶摇 · A股行情快照",
+      "url": "https://fuyao.aicubes.cn/api/a-share/prices/snapshot?thscodes=600519.SH",
+      "requestId": "61c65cd1fe364ef58825d1771278837b",
+      "simulated": false,
+      "observedAt": "2026-10-26T00:45:23.000Z",
+      "fetchedAt": "2026-10-26T00:45:26.261Z",
+      "value": null,
+      "error": "扶摇尚未提供有效最新成交价；可能尚未开市或数据未就绪，不使用昨收价替代",
+      "rawFields": {
+        "thscode": "600519.SH",
+        "last_price": null,
+        "prev_price": 1335,
+        "timestamp": 1792975523000
+      }
+    },
+    "tradingDay": true,
+    "tradingCalendar": {
+      "source": "扶摇 · A股交易日历",
+      "url": "https://fuyao.aicubes.cn/api/a-share/calendar/trading-days",
+      "requestId": "9fb46d0e5df24d21927fcc1408a83ef1",
+      "simulated": false,
+      "observedAt": "2026-10-26T00:45:24.932Z",
+      "fetchedAt": "2026-10-26T00:45:26.261Z",
+      "date": "20261026",
+      "tradingDay": true,
+      "window": {
+        "first": "20251027",
+        "last": "20261026"
+      },
+      "count": 242
+    }
+  },
+  "evaluation": {
+    "truth": null,
+    "results": [
+      {
+        "id": "c1",
+        "condition": "最新价 < 1400 元",
+        "type": "price",
+        "truth": null,
+        "reason": "扶摇尚未提供有效最新成交价；可能尚未开市或数据未就绪，不使用昨收价替代",
+        "evidence": {
+          "source": "扶摇 · A股行情快照",
+          "url": "https://fuyao.aicubes.cn/api/a-share/prices/snapshot?thscodes=600519.SH",
+          "requestId": "61c65cd1fe364ef58825d1771278837b",
+          "simulated": false,
+          "observedAt": "2026-10-26T00:45:23.000Z",
+          "fetchedAt": "2026-10-26T00:45:26.261Z",
+          "value": null,
+          "error": "扶摇尚未提供有效最新成交价；可能尚未开市或数据未就绪，不使用昨收价替代",
+          "rawFields": {
+            "thscode": "600519.SH",
+            "last_price": null,
+            "prev_price": 1335,
+            "timestamp": 1792975523000
+          }
+        },
+        "identities": []
+      }
+    ],
+    "degraded": true
+  }
+}

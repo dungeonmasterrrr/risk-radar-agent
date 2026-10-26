@@ -1,4 +1,5 @@
 import { AppError } from './rules.mjs';
+import { getFuyaoSnapshot } from './fuyao.mjs';
 export const SCENARIOS = ['normal', 'match', 'clear', 'stale', 'conflict', 'failure', 'missing'];
 export async function fetchJson(url, options = {}, fetcher = fetch) {
   const response = await fetcher(url, { ...options, signal: AbortSignal.timeout(12000) });
@@ -26,6 +27,7 @@ export function demoSnapshot(rule, scenario, now) {
 }
 export async function getSnapshot(rule, scenario, now, env = {}, fetcher = fetch) {
   if (rule.provider === 'demo') return demoSnapshot(rule, scenario, now);
+  if (rule.provider === 'fuyao') return getFuyaoSnapshot(rule,now,env,fetcher);
   if (rule.conditions.every(c => c.type === 'calendar')) return {};
   if (rule.provider === 'relay') {
     if (!env.DATA_RELAY_URL) throw new AppError('尚未配置授权数据中继 DATA_RELAY_URL', 503);

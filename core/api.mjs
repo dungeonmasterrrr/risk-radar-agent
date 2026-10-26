@@ -1,6 +1,7 @@
 import { AppError, defaultRule, SYMBOLS } from './rules.mjs';
 import { compile } from './agent.mjs';
 import { modelConfiguration } from './models.mjs';
+import { getFuyaoSnapshot } from './fuyao.mjs';
 import { Store } from './store.mjs';
 import { runTask, runDue } from './engine.mjs';
 const json = (value, status = 200, headers = {}) => Response.json(value, {status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}});
@@ -46,8 +47,13 @@ export async function handleApi(request,db,env={}) {
       try {body=JSON.parse(raw);}catch{throw new AppError('JSON 格式无效');}
       if(!body||typeof body!=='object'||Array.isArray(body))throw new AppError('请求格式无效');
     }
-    if(path[0]==='config'&&request.method==='GET'){const model=modelConfiguration(env);return reply({symbols:SYMBOLS,modelConfigured:model.configured,modelProvider:model.provider,modelName:model.name,relayConfigured:!!env.DATA_RELAY_URL,schedulerConfigured:!!env.SCHEDULER_SECRET||env.PRIVATE_SERVICE_UPDATES==='true',schedulerCadenceSeconds:env.PRIVATE_SERVICE_UPDATES==='true'?3600:15,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'腾讯公开行情为实验接入；扶摇与 iFinD 需配置授权中继。演示数据不代表真实市场。'});}
+    if(path[0]==='config'&&request.method==='GET'){const model=modelConfiguration(env);return reply({symbols:SYMBOLS,modelConfigured:model.configured,modelProvider:model.provider,modelName:model.name,fuyaoConfigured:!!env.FUYAO_API_KEY,relayConfigured:!!env.DATA_RELAY_URL,schedulerConfigured:!!env.SCHEDULER_SECRET||env.PRIVATE_SERVICE_UPDATES==='true',schedulerCadenceSeconds:env.PRIVATE_SERVICE_UPDATES==='true'?3600:15,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'扶摇已支持价格与交易日历直连；公告、热度及 iFinD 尚未直接接入。腾讯行情为实验来源，演示数据不代表真实市场。'});}
     if(path[0]==='compile'&&request.method==='POST')return reply(await compile(body.input,env));
+    if(path[0]==='fuyao-check'&&request.method==='POST'){
+      const rule=defaultRule();rule.provider='fuyao';rule.schedule.mode='trading';
+      const snapshot=await getFuyaoSnapshot(rule,Date.now(),env);
+      return reply({connected:!!snapshot.price?.requestId&&!!snapshot.tradingCalendar?.requestId,latestPriceAvailable:typeof snapshot.price?.value==='number',snapshot});
+    }
     if(path[0]==='notifications') {
       if(request.method==='GET')return reply({notifications:await store.notifications(owner)});
       if(request.method==='POST'&&typeof body.id==='string'){await store.markRead(owner,body.id);return reply({ok:true});}

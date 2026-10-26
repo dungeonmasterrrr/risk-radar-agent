@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import {parseEnv} from 'node:util';
+import {getSnapshot} from '../core/providers.mjs';
+import {defaultRule,evaluate} from '../core/rules.mjs';
+const env=parseEnv(fs.readFileSync('.dev.vars','utf8'));
+if(!env.FUYAO_API_KEY)throw new Error('Configure FUYAO_API_KEY in .dev.vars first');
+const now=Date.now();const rule=defaultRule();rule.provider='fuyao';rule.schedule.mode='trading';
+const snapshot=await getSnapshot(rule,'normal',now,env);
+const report={testedAt:new Date().toISOString(),provider:'fuyao',interfaceVerified:!!snapshot.price?.requestId&&!!snapshot.tradingCalendar?.requestId&&typeof snapshot.tradingDay==='boolean',snapshot,evaluation:evaluate(rule,snapshot,now)};
+const safe=JSON.stringify(report,null,2).replaceAll(env.FUYAO_API_KEY,'[redacted]');
+fs.mkdirSync('outputs',{recursive:true});fs.writeFileSync('outputs/fuyao-adapter-live.json',safe);console.log(safe);
+if(!report.interfaceVerified)process.exitCode=1;

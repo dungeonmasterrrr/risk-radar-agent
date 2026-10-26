@@ -1,0 +1,33 @@
+{
+  "testedAt": "2026-10-26T00:49:17.165Z",
+  "checks": [
+    {
+      "name": "真实数据来源选择、确认启用、检查与证据",
+      "passed": true,
+      "runId": "310500ae-8442-497e-8c8a-4185962b852b",
+      "snapshot": {
+        "price": {
+          "source": "扶摇 · A股行情快照",
+          "url": "https://fuyao.aicubes.cn/api/a-share/prices/snapshot?thscodes=600519.SH",
+          "requestId": "6cd347af8e5f42b786e21639ee191a73",
+          "simulated": false,
+          "observedAt": "2026-10-26T00:49:16.000Z",
+          "fetchedAt": "2026-10-26T00:49:20.921Z",
+          "value": null,
+          "error": "扶摇尚未提供有效最新成交价；可能尚未开市或数据未就绪，不使用昨收价替代",
+          "rawFields": {
+            "thscode": "600519.SH",
+            "last_price": null,
+            "prev_price": 1335,
+            "timestamp": 1792975756000
+          }
+        }
+      }
+    },
+    {
+      "name": "扶摇配置状态及手机布局",
+      "passed": true
+    }
+  ],
+  "pageErrors": []
+}
