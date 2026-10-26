@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { compile, localCompile } from '../core/agent.mjs';
 import { defaultRule } from '../core/rules.mjs';
 test('本地明确价格语句编译为可修改草案，披露默认与未调用模型',async()=>{const d=await compile('茅台价格低于 1400 元，每 5 分钟检查，冷却 30 分钟');assert.equal(d.mode,'local');assert.equal(d.rule.conditions[0].value,1400);assert.equal(d.rule.schedule.intervalSeconds,300);assert.equal(d.rule.cooldownSeconds,1800);assert.ok(d.trace.find(t=>t.status==='unconfigured'));assert.ok(d.defaults.length);});
-test('公告、热度、组合及绝对日期被解析',()=>{assert.equal(localCompile('宁德时代出现回购公告时提醒').rule.conditions[0].type,'event');const combo=localCompile('招商银行价格高于 40 元且热度高于 80 时提醒');assert.equal(combo.rule.conditions.length,2);assert.equal(combo.rule.logic,'all');assert.equal(localCompile('茅台在 2026-11-05 09:00 提醒').rule.conditions[0].type,'calendar');});
+test('公告、热度、组合及绝对日期被解析',()=>{assert.equal(localCompile('宁德时代出现回购公告时提醒').rule.conditions[0].type,'event');const combo=localCompile('招商银行价格高于 40 元且热榜排名趋势上升时提醒');assert.equal(combo.rule.conditions.length,2);assert.equal(combo.rule.logic,'all');assert.equal(localCompile('茅台在 2026-11-05 09:00 提醒').rule.conditions[0].type,'calendar');});
 for(const input of ['茅台明显下跌时提醒','下周关注茅台财报','茅台和宁德时代低于 100 元提醒','某只股票低于 100 元','茅台价格变化时提醒','茅台低于 1400 或高于 1500 提醒'])test(`歧义输入不擅自启用：${input}`,async()=>{const d=await compile(input);assert.equal(d.rule,null);assert.ok(d.questions.length);});
 test('交易与保证收益请求被能力范围拦截',async()=>{for(const input of ['茅台低于1400元自动买入','保证收益20%'])assert.equal((await compile(input)).mode,'guardrail');});
 test('不支持的附加指标和混合逻辑不得被静默忽略',async()=>{for(const input of ['茅台低于1400元且成交量超过100万','茅台低于1400元且回购公告或热度高于80'])assert.equal((await compile(input)).rule,null);});

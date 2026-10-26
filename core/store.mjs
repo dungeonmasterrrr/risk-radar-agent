@@ -1,7 +1,12 @@
 import { AppError, validateRule, summarize } from './rules.mjs';
+import {isLegacyHeat} from './heat.mjs';
 const uid = () => crypto.randomUUID();
 export const initialState = () => ({ lastTruth: false, episode: 0, episodeDelivered: false, seen: [], lastNotifiedAt: null, failures: 0, health: 'pending', lastResult: null, lastRunAt: null });
-export function decodeTask(row) { return row ? { ...row, rule: JSON.parse(row.rule_json), state: JSON.parse(row.state_json), rule_json: undefined, state_json: undefined, summary: summarize(JSON.parse(row.rule_json)) } : null; }
+export function decodeTask(row) {
+  if(!row)return null;
+  const rule=JSON.parse(row.rule_json);
+  return {...row,rule,state:JSON.parse(row.state_json),requiresRuleUpdate:rule.conditions.some(isLegacyHeat),rule_json:undefined,state_json:undefined,summary:summarize(rule)};
+}
 export class Store {
   constructor(db) { this.db = db; }
   query(sql, ...args) { return this.db.prepare(sql).bind(...args); }

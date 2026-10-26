@@ -4,7 +4,7 @@ import { AppError, defaultRule, SYMBOLS, validateRule, evaluate } from './rules.
 import { getSnapshot } from './providers.mjs';
 import { compile } from './agent.mjs';
 import { modelConfiguration } from './models.mjs';
-import { getFuyaoSnapshot } from './fuyao.mjs';
+import { getFuyaoSnapshot, getFuyaoHotList } from './fuyao.mjs';
 import { Store } from './store.mjs';
 import { runTask, runDue } from './engine.mjs';
 const json = (value, status = 200, headers = {}) => Response.json(value, {status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}});
@@ -50,7 +50,7 @@ export async function handleApi(request,db,env={}) {
       try {body=JSON.parse(raw);}catch{throw new AppError('JSON 格式无效');}
       if(!body||typeof body!=='object'||Array.isArray(body))throw new AppError('请求格式无效');
     }
-    if(path[0]==='config'&&request.method==='GET'){const model=modelConfiguration(env);return reply({symbols:SYMBOLS,modelConfigured:model.configured,modelProvider:model.provider,modelName:model.name,fuyaoConfigured:!!env.FUYAO_API_KEY,ifindConfigured:!!env.IFIND_MCP_API_KEY,schedulerConfigured:!!env.SCHEDULER_SECRET||env.PRIVATE_SERVICE_UPDATES==='true',schedulerCadenceSeconds:env.PRIVATE_SERVICE_UPDATES==='true'?3600:15,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'扶摇已支持价格与交易日历直连；iFinD已接入价格与公告语义检索；数值热度尚未接入。腾讯行情为实验来源，演示数据不代表真实市场。'});}
+    if(path[0]==='config'&&request.method==='GET'){const model=modelConfiguration(env);return reply({symbols:SYMBOLS,modelConfigured:model.configured,modelProvider:model.provider,modelName:model.name,fuyaoConfigured:!!env.FUYAO_API_KEY,ifindConfigured:!!env.IFIND_MCP_API_KEY,schedulerConfigured:!!env.SCHEDULER_SECRET||env.PRIVATE_SERVICE_UPDATES==='true',schedulerCadenceSeconds:env.PRIVATE_SERVICE_UPDATES==='true'?3600:15,heartbeat:await store.heartbeatStatus(),sessionMode:authenticated?'authenticated':'isolated-demo',disclosure:'扶摇已支持价格与交易日历直连；iFinD已接入价格与公告语义检索；扶摇已接入同花顺热榜，原始热度值仅展示。腾讯行情为实验来源，演示数据不代表真实市场。'});}
     if(path[0]==='instruments'&&request.method==='GET')return reply(await searchInstruments(url.searchParams.get('q'),env));
     if(path[0]==='compile'&&request.method==='POST')return reply(await compile(body.input,env));
     if(path[0]==='preview'&&request.method==='POST'){
@@ -59,6 +59,7 @@ export async function handleApi(request,db,env={}) {
       const snapshot=await getSnapshot(rule,'normal',now,env);
       return reply({rule,snapshot,evaluation:evaluate(rule,snapshot,now),checkedAt:new Date(now).toISOString()});
     }
+    if(path[0]==='heat-board'&&request.method==='POST')return reply(await getFuyaoHotList(body.period||'day',Date.now(),env));
     if(path[0]==='ifind-check'&&request.method==='POST'){
       const client=createIfindClient(env);const news=await client.list('news');
       return reply({connected:true,tools:news.map(t=>({name:t.name,description:t.description})),capabilities:{price:true,noticeSearch:true,newsSearch:true,hotspotSearch:true,numericHeat:false}});
@@ -77,7 +78,7 @@ export async function handleApi(request,db,env={}) {
       if((await store.list(owner)).length)return reply({tasks:await store.list(owner)});
       const r1=defaultRule();r1.schedule.intervalSeconds=60;
       const r2=defaultRule(SYMBOLS[1]);r2.conditions=[{type:'event',keyword:'回购',lookbackMinutes:1440}];r2.schedule.intervalSeconds=120;
-      const r3=defaultRule(SYMBOLS[3]);r3.conditions=[{type:'price',op:'gt',value:40},{type:'heat',op:'gt',value:80}];
+      const r3=defaultRule(SYMBOLS[3]);r3.conditions=[{type:'price',op:'gt',value:40},{type:'heat',mode:'rank',period:'day',topN:50}];
       const created=[];
       for(const [i,r] of [r1,r2,r3].entries()){
         const t=await store.create(owner,{title:['茅台价格防线','宁德时代 · 回购公告','招商银行 · 量价关注'][i],rule:r,confirmed:true});

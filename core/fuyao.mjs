@@ -18,11 +18,38 @@ export async function requestFuyao(path,query,key,fetcher){
   return {data:body.data,url:url.href,requestId};
 }
 function base(result,now,source){return {source,url:result.url,requestId:result.requestId,simulated:false,observedAt:validTimestamp(result.data.timestamp)?new Date(result.data.timestamp).toISOString():null,fetchedAt:new Date(now).toISOString()};}
+export async function getFuyaoHotList(period,now,env={},fetcher=fetch){
+  if(!['day','hour'].includes(period))throw new AppError('热榜周期须为day或hour');
+  if(!env.FUYAO_API_KEY)throw new AppError('尚未配置扶摇密钥 FUYAO_API_KEY',503);
+  const result=await requestFuyao('/api/a-share/special-data/hot-stock-list',{period,limit:'100'},env.FUYAO_API_KEY,fetcher);
+  const b=base(result,now,'扶摇 · 同花顺A股热股榜');
+  if(!validTimestamp(result.data.timestamp))throw new AppError('热榜缺少有效来源时间',502);
+  if(result.data.item.length>100)throw new AppError('热榜返回超出请求范围，未采用数据',502);
+  const codes=new Set(),ranks=new Set();let lastRank=0;
+  const rows=result.data.item.map(row=>{
+    if(!row||!/^\d{6}\.(SH|SZ)$/.test(row.thscode)||typeof row.name!=='string'||!row.name.trim()||!Number.isInteger(row.rank)||row.rank<1||row.rank>100||codes.has(row.thscode)||ranks.has(row.rank)||row.rank<=lastRank||row.ticker&&row.ticker!==row.thscode.slice(0,6))throw new AppError('热榜标的、排名、顺序或重复字段校验失败',502);
+    codes.add(row.thscode);ranks.add(row.rank);lastRank=row.rank;
+    const rankChange=Number.isSafeInteger(row.rank_change)?row.rank_change:null;
+    const trend=['up','down','flat','unknown'].includes(row.rank_trend)?row.rank_trend:'unknown';
+    const conflict=rankChange!==null&&trend!=='unknown'&&((rankChange>0&&trend!=='up')||(rankChange<0&&trend!=='down')||(rankChange===0&&trend!=='flat'));
+    return {code:row.thscode.slice(0,6),market:row.thscode.slice(-2),name:row.name,thscode:row.thscode,rank:row.rank,rawHeat:typeof row.heat==='string'&&/^\d+(?:\.\d+)?$/.test(row.heat)?row.heat:null,rankChange,trend,conflict};
+  });
+  let coverageRank=0;while(ranks.has(coverageRank+1))coverageRank++;
+  return {...b,period,coverageRank,requestedLimit:100,returnedCount:rows.length,rows};
+}
+export function heatForSymbol(board,symbol){
+  const row=board.rows.find(r=>r.thscode===`${symbol.code}.${symbol.market}`);
+  const {rows,...metadata}=board;
+  return {...metadata,listed:row?true:board.coverageRank===100?false:null,rank:row?.rank??null,rawHeat:row?.rawHeat??null,rankChange:row?.rankChange??null,trend:row?.trend||'unknown',conflict:row?.conflict||false,thscode:`${symbol.code}.${symbol.market}`};
+}
 export async function getFuyaoSnapshot(rule,now,env={},fetcher=fetch){
   const needsPrice=rule.conditions.some(c=>c.type==='price');
   const needsCalendar=rule.schedule.mode==='trading';
   const snapshot={};
-  for(const type of ['event','heat'])if(rule.conditions.some(c=>c.type===type))snapshot[type]={source:'扶摇直连',simulated:false,error:'扶摇直连当前仅接入价格与交易日历；该类条件需选择其他已接入来源'};
+  if(rule.conditions.some(c=>c.type==='event'))snapshot.event={source:'扶摇直连',simulated:false,error:'公告条件请使用iFinD MCP'};
+  const periods=[...new Set(rule.conditions.filter(c=>c.type==='heat'&&['day','hour'].includes(c.period)).map(c=>c.period))];
+  if(periods.length)snapshot.heatByPeriod={};
+  for(const period of periods)try{snapshot.heatByPeriod[period]=heatForSymbol(await getFuyaoHotList(period,now,env,fetcher),rule.symbol);}catch(e){snapshot.heatByPeriod[period]={source:'扶摇 · 同花顺A股热股榜',period,simulated:false,error:e instanceof AppError?e.message:'热榜数据解析失败'};}
   if(!needsPrice&&!needsCalendar)return snapshot;
   if(!env.FUYAO_API_KEY)throw new AppError('尚未配置扶摇密钥 FUYAO_API_KEY',503);
   const key=env.FUYAO_API_KEY;

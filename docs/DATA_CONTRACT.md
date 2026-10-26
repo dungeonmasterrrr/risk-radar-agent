@@ -4,6 +4,7 @@
 
 - 扶摇：meta/tickers/search 查询目录；a-share、a-share-index 对应各自快照接口。ETF 等目录可查询，但当前不能作为扶摇行情监控。使用服务端 FUYAO_API_KEY。
 - Yahoo Finance：固定 HTTPS 域名的 search 与 chart 实验接口，支持股票、ETF、指数。纳斯达克100为 ^NDX，不是境内纳指 ETF。公开行情可能延迟、限流或不可用，无 SLA。
+- 同花顺热榜：扶摇提供day/hour榜单；读取排名、原始热度、排名变化与趋势。原始热度仅展示，触发规则见[热榜说明](HEAT_SETUP.md)。
 - 腾讯：保留实验价格接入。
 - 演示：明确标记模拟来源。
 

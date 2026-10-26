@@ -109,9 +109,10 @@ async function noticeSnapshot(data,rule,condition,now,query){
 }
 export async function getIfindSnapshot(rule,now,env={},fetcher=fetch){
   const client=createIfindClient(env,fetcher),snapshot={events:{}};
+  const extraPromise=rule.schedule.mode==='trading'||rule.conditions.some(c=>c.type==='heat')?getFuyaoSnapshot({...rule,conditions:rule.conditions.filter(c=>c.type==='heat')},now,env,fetcher).catch(e=>({tradingCalendar:{source:'扶摇交易日历',error:e instanceof AppError?e.message:'交易日历不可用'}})):Promise.resolve({});
   if(rule.conditions.some(c=>c.type==='price'))try{const index=rule.symbol.assetType==='a-share-index'||rule.symbol.code==='000300'&&rule.symbol.market==='SH',server=index?'index':'stock',tool=`${server}_highfreq_quotes`;const data=await client.call(server,tool,{symbols:`${rule.symbol.code}.${rule.symbol.market}`,indicators:'最新价',data_mode:'real_time'});snapshot.price=ifindPrice(data,rule.symbol,now,tool);}catch(e){snapshot.price={...sourceBase(now,'highfreq_quotes'),error:e instanceof AppError?e.message:'iFinD 行情解析失败'};}
   // Sequential calls keep per-task concurrency below the free-account limit.
   for(const c of rule.conditions.filter(c=>c.type==='event'))try{const args={query:`${rule.symbol.name} ${rule.symbol.code}.${rule.symbol.market} ${c.keyword}`,time_start:dateKey(now-c.lookbackMinutes*60000),time_end:dateKey(now),size:20};const data=await client.call('news','search_notice',args);snapshot.events[c.id]=await noticeSnapshot(data,rule,c,now,args);}catch(e){snapshot.events[c.id]={...sourceBase(now,'search_notice'),error:e instanceof AppError?e.message:'iFinD 公告数据解析失败'};}
-  if(rule.schedule.mode==='trading')try{const calendar=await getFuyaoSnapshot({...rule,conditions:[]},now,env,fetcher);snapshot.tradingDay=calendar.tradingDay;snapshot.tradingCalendar=calendar.tradingCalendar;}catch(e){snapshot.tradingCalendar={source:'扶摇交易日历',error:e instanceof AppError?e.message:'交易日历不可用'};}
+  Object.assign(snapshot,await extraPromise);
   return snapshot;
 }

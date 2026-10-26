@@ -1,3 +1,4 @@
+import {heatLabel,evaluateHeat,isLegacyHeat} from './heat.mjs';
 export class AppError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }
 }
@@ -36,7 +37,16 @@ export function validateRule(input) {
   if (!Array.isArray(r.conditions) || r.conditions.length < 1 || r.conditions.length > 8) throw new AppError('请配置 1–8 个条件');
   r.conditions = r.conditions.map((c, i) => {
     const id = `c${i + 1}`;
-    if (c.type === 'price' || c.type === 'heat') {
+    if(c.type==='heat'){
+      if(isLegacyHeat(c))throw new AppError('原始热度数值阈值已取消，请改为上榜、排名、排名变化或趋势条件');
+      if(!['listed','rank','rank_change','trend'].includes(c.mode)||!['day','hour'].includes(c.period))throw new AppError('请选择热榜触发方式与周期');
+      const item={id,type:'heat',mode:c.mode,period:c.period};
+      if(c.mode==='rank'){if(!Number.isInteger(c.topN))throw new AppError('排名须为整数');item.topN=number(c.topN,1,100,'前N名');}
+      if(c.mode==='rank_change'){if(!['up','down'].includes(c.direction)||!Number.isInteger(c.minChange))throw new AppError('请选择排名变化方向与整数位数');item.direction=c.direction;item.minChange=number(c.minChange,1,1000000,'排名变化位数');}
+      if(c.mode==='trend'){if(!['up','down','flat'].includes(c.trend))throw new AppError('请选择上升、下降或持平趋势');item.trend=c.trend;}
+      return item;
+    }
+    if (c.type === 'price') {
       if (!['lt', 'lte', 'gt', 'gte'].includes(c.op)) throw new AppError('比较方式无效');
       return { id, type: c.type, op: c.op, value: number(c.value, 0, 1e9, '阈值') };
     }
@@ -52,8 +62,8 @@ export function validateRule(input) {
   });
   if(r.conditions.some(c=>c.type==='drawdown')&&!['yahoo','demo'].includes(r.provider))throw new AppError('回撤条件当前支持 Yahoo 实验行情或演示数据');
   if(r.provider==='yahoo'&&r.conditions.some(c=>!['price','drawdown','calendar'].includes(c.type)))throw new AppError('Yahoo 当前支持价格、回撤与日历条件');
-  if(r.provider==='ifind'&&r.conditions.some(c=>!['price','event','calendar'].includes(c.type)))throw new AppError('iFinD 当前接入价格、公告检索与日历；未提供统一数值热度，不支持热度阈值');
-  if(r.provider==='fuyao'&&r.conditions.some(c=>!['price','calendar'].includes(c.type)))throw new AppError('扶摇直连当前仅支持价格与日历条件；公告、热度请选择演示或其他授权来源');
+  if(r.conditions.some(c=>c.type==='heat')&&(!['demo','fuyao','ifind'].includes(r.provider)||r.symbol.market==='GLOBAL'||r.symbol.assetType==='a-share-index'||r.symbol.market==='SH'&&r.symbol.code==='000300'))throw new AppError('同花顺热榜仅支持A股股票，请选择扶摇或iFinD来源的A股股票');
+  if(r.provider==='fuyao'&&r.conditions.some(c=>!['price','calendar','heat'].includes(c.type)))throw new AppError('扶摇支持价格、交易日历与同花顺热榜；公告请使用iFinD MCP');
   if (!['always', 'trading'].includes(r.schedule?.mode)) throw new AppError('调度模式无效');
   number(r.schedule.intervalSeconds, 30, 86400, '检查间隔秒');
   number(r.cooldownSeconds, 0, 604800, '冷却秒');
@@ -67,7 +77,7 @@ export const OPS = { lt: '<', lte: '≤', gt: '>', gte: '≥' };
 export function conditionLabel(c) {
   if(c.type==='drawdown')return `较近 ${c.lookbackDays} 个自然日日线最高价回撤 ≥ ${c.value}%`;
   if (c.type === 'price') return `最新价 ${OPS[c.op]} ${c.value} 元`;
-  if (c.type === 'heat') return `热度指数 ${OPS[c.op]} ${c.value}`;
+  if (c.type === 'heat') return heatLabel(c);
   if (c.type === 'event') return `近 ${c.lookbackMinutes} 分钟公告含「${c.keyword}」`;
   return `${c.label} · ${c.at}`;
 }
@@ -84,16 +94,18 @@ export function combine(results, logic) {
 export function evaluate(rule, snapshot, now) {
   const results = rule.conditions.map(c => {
     const base = { id: c.id, condition: conditionLabel(c), type: c.type, truth: null, reason: '', evidence: null, identities: [] };
+    if(isLegacyHeat(c))return {...base,reason:'旧版原始热度数值比较已停用，请编辑并确认热榜规则'};
     if (c.type === 'calendar') {
       const truth = now >= Date.parse(c.at);
       return { ...base, truth, reason: truth ? '已到指定提醒时间' : '尚未到指定提醒时间', evidence: { source: '用户确认的日历规则', at: c.at, checkedAt: new Date(now).toISOString() }, identities: truth ? [`calendar:${c.at}`] : [] };
     }
-    const data = c.type==='drawdown'?snapshot.drawdowns?.[c.id]:c.type==='event'?(snapshot.events?.[c.id]||snapshot.event):snapshot[c.type];
+    const data = c.type==='heat'?(snapshot.heatByPeriod?.[c.period]||snapshot.heat):c.type==='drawdown'?snapshot.drawdowns?.[c.id]:c.type==='event'?(snapshot.events?.[c.id]||snapshot.event):snapshot[c.type];
     if (!data || data.error) return { ...base, reason: data?.error || '来源未提供该类数据', evidence: data || null };
     if (typeof data.source !== 'string' || !data.source.trim()) return { ...base, reason: '缺少可追溯的数据来源', evidence: data };
     const age = (now - Date.parse(data.observedAt)) / 1000;
     if (!Number.isFinite(age) || age < -60 || age > rule.maxAgeSeconds) return { ...base, reason: `数据时间无效或已过期（有效期 ${rule.maxAgeSeconds} 秒）`, evidence: data };
     if (data.conflict) return { ...base, reason: '来源数据存在冲突，本次不采用任一冲突值', evidence: data };
+    if(c.type==='heat')return {...base,...evaluateHeat(c,data),evidence:data};
     if (c.type === 'event') {
       if (!Array.isArray(data.items) || data.items.some(e => typeof e.id !== 'string' || !e.id || typeof e.title !== 'string' || !Number.isFinite(Date.parse(e.publishedAt)))) return { ...base, reason: '事件字段缺失或发布时间无效', evidence: data };
       const relevant=data.items.filter(e=>(data.matchScope==='title-and-excerpt'?`${e.title}\n${e.excerpt||''}`:e.title).includes(c.keyword));

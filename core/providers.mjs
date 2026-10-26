@@ -12,7 +12,7 @@ export function demoSnapshot(rule, scenario, now) {
   const base = { source: '内置可复现演示数据', simulated: true, observedAt: new Date(now - (scenario === 'stale' ? 86400000 : 2000)).toISOString(), fetchedAt: new Date(now).toISOString() };
   if (scenario === 'failure') return { price: { ...base, error: '模拟接口超时：等待退避重试' }, event: { ...base, error: '模拟接口超时' }, heat: { ...base, error: '模拟接口超时' }, tradingDay: true };
   const priceRule = rule.conditions.find(c => c.type === 'price');
-  const heatRule = rule.conditions.find(c => c.type === 'heat');
+
   function value(c, fallback) {
     if (!c || !['match', 'clear'].includes(scenario)) return fallback;
     const below = c.op.startsWith('l');
@@ -22,7 +22,12 @@ export function demoSnapshot(rule, scenario, now) {
   const keyword = rule.conditions.find(c => c.type === 'event')?.keyword || '回购';
   return {
     price: { ...base, value: scenario === 'missing' ? null : value(priceRule, 1388), currency: 'CNY', conflict: scenario === 'conflict', alternatives: scenario === 'conflict' ? [1388, 1412] : undefined },
-    heat: { ...base, value: value(heatRule, 72), metric: '演示热度指数（自定义 0–100）', conflict: scenario === 'conflict' },
+    heatByPeriod:Object.fromEntries(['day','hour'].map(period=>{
+      const c=rule.conditions.find(c=>c.type==='heat'&&c.period===period);
+      const trend=scenario==='match'&&c?.mode==='trend'?c.trend:'up';
+      const rankChange=trend==='up'?(c?.mode==='rank_change'?c.minChange+1:5):trend==='down'?-(c?.mode==='rank_change'?c.minChange+1:5):0;
+      return [period,{...base,period,listed:scenario!=='clear',rank:scenario==='clear'?null:scenario==='match'?1:60,rawHeat:'1234567',rankChange,trend,coverageRank:100,returnedCount:100,conflict:scenario==='conflict',...(['missing','failure'].includes(scenario)?{error:'演示热榜字段缺失或接口失败'}:{})}];
+    })),
     event: { ...base, items: scenario === 'clear' ? [] : [{ id: 'demo-announcement-001', title: `${rule.symbol.name}：关于${keyword}事项的演示公告`, publishedAt: new Date(now - 60000).toISOString(), url: null }], conflict: scenario === 'conflict' },
     drawdowns:Object.fromEntries(rule.conditions.filter(c=>c.type==='drawdown').map(c=>[c.id,{...base,value:scenario==='match'?c.value+1:scenario==='clear'?Math.max(0,c.value-1):5,lookbackDays:c.lookbackDays,simulated:true,conflict:scenario==='conflict',...(scenario==='missing'?{error:'模拟历史缺失'}:{})}])),
     tradingDay: true,
