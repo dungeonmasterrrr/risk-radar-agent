@@ -10,7 +10,7 @@
 | 架构与实现 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | 测试说明 | [TESTING.md](docs/TESTING.md) |
 
-**访问说明：当前线上站点为所有者私有访问，仓库也按私有方式交付。评审或协作者需要分别获得站点和仓库权限；知道 URL 不代表已经获得访问权限。**
+
 
 ## 目标用户与使用场景
 
