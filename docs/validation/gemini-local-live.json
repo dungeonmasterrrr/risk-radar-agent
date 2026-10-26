@@ -1,0 +1,48 @@
+{
+  "testedAt": "2026-10-26T00:01:57.247Z",
+  "elapsedMs": 4785,
+  "mode": "model",
+  "provider": "gemini",
+  "model": "gemini-3.1-flash-lite",
+  "rule": {
+    "symbol": {
+      "code": "600519",
+      "market": "SH",
+      "name": "贵州茅台"
+    },
+    "provider": "demo",
+    "logic": "any",
+    "conditions": [
+      {
+        "id": "c1",
+        "type": "price",
+        "op": "lt",
+        "value": 1400
+      }
+    ],
+    "schedule": {
+      "mode": "always",
+      "intervalSeconds": 300
+    },
+    "cooldownSeconds": 1800,
+    "maxAgeSeconds": 300
+  },
+  "questions": [],
+  "trace": [
+    {
+      "tool": "resolve_symbol",
+      "status": "ok",
+      "detail": "贵州茅台 · SH600519"
+    },
+    {
+      "tool": "model_compile",
+      "status": "ok",
+      "detail": "gemini · gemini-3.1-flash-lite；已实际调用并通过输出校验"
+    },
+    {
+      "tool": "validate_rule",
+      "status": "ok",
+      "detail": "等待用户检查与确认，尚未创建任务"
+    }
+  ]
+}

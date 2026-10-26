@@ -4,7 +4,7 @@
 
 ## 当前结果
 
-- 自动化测试：73 项通过、0 失败。原始 JUnit：[unit-results.xml](validation/unit-results.xml)。
+- 自动化测试：75 项通过、0 失败。原始 JUnit：[unit-results.xml](validation/unit-results.xml)。
 - TypeScript：`tsc --noEmit` 通过。
 - Vinext：生产构建通过；部署产物的 Worker scheduled 入口通过 Miniflare 直接调用验证，返回 ok 并写入 cloudflare-cron 心跳，见 [worker-scheduled.json](validation/worker-scheduled.json)。
 - 浏览器：9 个操作场景通过、0 页面脚本错误。报告额外包含 1 条后台执行证据，不能将该证据另算一次操作测试。见 [browser-results.json](validation/browser-results.json)。
@@ -17,6 +17,8 @@
 |---|---|
 | rules.test.mjs | 白名单、阈值边界、三值逻辑、来源与新鲜度、事件回看、日历、北京时间时段 |
 | agent.test.mjs | 明确输入、歧义澄清、不支持指标、模型契约、结构校验、失败降级、能力边界 |
+| gemini.test.mjs | Gemini 原生请求、额度与鉴权失败、超时、截断、澄清及密钥隔离 |
+| model-worker.test.mjs | 真实 workerd 构造模型请求；跨提供方拒绝重定向与密钥转发 |
 | providers.test.mjs | 行情字段、来源时间、状态错误、中继配置与服务端鉴权 |
 | engine.test.mjs | 命中、去重、冷却、恢复、暂停、版本、后台领取、事务、并发、租约接管、重启与隔离 |
 | api.test.mjs | 确认启用、主链路、证据、通知、浏览器空间隔离、跨站写入、调度鉴权、无效请求 |

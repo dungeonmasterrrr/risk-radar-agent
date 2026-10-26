@@ -27,6 +27,8 @@ GEMINI_MODEL=gemini-3.1-flash-lite
 
 ## 当前验证状态
 
-适配器和模拟服务测试已实现。创建 key、真实账号权限、真实模型效果及线上 key 配置仍需在拿到有效 key 后验证。本文件不代表已经申请或生成 key。
+用户已自行创建并配置 key。本地真实基础规则生成成功，约 4.8 秒，返回 mode=model、provider=gemini，规则通过服务端校验。补充请求曾出现超时和 HTTP 503，已记录降级，不能据此承诺稳定性。
+
+线上 key 已写入服务端 secret。首次线上测试发现 Worker 不支持 redirect=error，已改为 manual 并显式拒绝重定向，新增真实 workerd 运行时回归测试。最新线上复测保存在 outputs/gemini-online-check.json；源码和报告不含 key。
 
 官方资料：[API keys](https://ai.google.dev/gemini-api/docs/api-key)、[模型说明](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite)、[价格](https://ai.google.dev/gemini-api/docs/pricing)、[结构化输出](https://ai.google.dev/gemini-api/docs/generate-content/structured-output)、[可用地区](https://ai.google.dev/gemini-api/docs/available-regions)。

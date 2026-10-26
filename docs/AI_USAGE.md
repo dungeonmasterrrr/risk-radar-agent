@@ -20,9 +20,9 @@
 
 服务端支持 OpenAI Responses API，使用 JSON Schema 结构化输出、`store=false` 和超时约束。输出再次经过本地规则校验，用户必须检查并确认。模型名和 key 从服务端环境读取，无默认真实模型调用与费用。
 
-当前未配置真实模型凭据，因此真实模型调用、模型准确率、费用、延迟及账户可用性均未验证。自动测试使用模拟响应验证成功、无效规则、错误结构、接口失败与降级；这些测试不等同于真实模型效果评估。
+初始交付时未配置真实模型凭据，自动测试使用模拟响应验证成功、无效规则、错误结构、接口失败与降级。随后用户配置 Gemini key，本地真实基础规则编译已成功；额外测试出现超时与 503，不能把一次成功作为效果准确率或稳定性评估。费用与免费配额仍以用户 Google 项目为准。
 
-新增 Gemini 原生适配，默认模型 gemini-3.1-flash-lite，官方说明支持结构化输出且列有免费层。已用模拟服务验证成功、澄清、429 限流、鉴权失败、模型不可用、超时、截断与无效输出；不会自动重试或切换其他模型。尚未替用户生成 key，真实 Gemini 调用仍待用户完成 AI Studio 申请。接入步骤见 GEMINI_SETUP.md。
+新增 Gemini 原生适配，默认模型 gemini-3.1-flash-lite，官方说明支持结构化输出且列有免费层。已用模拟服务验证成功、澄清、429 限流、鉴权失败、模型不可用、超时、截断与无效输出；不会自动重试或切换其他模型。用户自行申请 key 后完成本地实调及线上服务端配置。接入与复测说明见 GEMINI_SETUP.md。
 
 参考官方文档：[Structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs)、[Responses create](https://developers.openai.com/api/reference/resources/responses/methods/create)。
 

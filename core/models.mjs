@@ -24,7 +24,7 @@ export async function requestModelDraft(input, instructions, schema, env, fetche
     let response, output;
     if (config.provider === 'gemini') {
       response = await fetcher(`https://generativelanguage.googleapis.com/v1beta/models/${config.name}:generateContent`, {
-        method: 'POST', redirect: 'error', signal: AbortSignal.timeout(25000),
+        method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(25000),
         headers: { 'x-goog-api-key': env.GEMINI_API_KEY, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: instructions }] },
@@ -40,7 +40,7 @@ export async function requestModelDraft(input, instructions, schema, env, fetche
       output = candidate.content?.parts?.filter(part => !part.thought && typeof part.text === 'string').map(part => part.text).join('');
     } else {
       response = await fetcher('https://api.openai.com/v1/responses', {
-        method: 'POST', redirect: 'error', signal: AbortSignal.timeout(25000),
+        method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(25000),
         headers: { Authorization: `Bearer ${env.MODEL_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ model: config.name, store: false, instructions, input, text: { format: { type: 'json_schema', name: 'monitor_draft', strict: true, schema } }, max_output_tokens: 2200 }),
       });

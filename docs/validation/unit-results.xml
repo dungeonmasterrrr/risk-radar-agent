@@ -1,84 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <testsuites>
-	<testcase name="本地明确价格语句编译为可修改草案，披露默认与未调用模型" time="0.005931" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="公告、热度、组合及绝对日期被解析" time="0.004843" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="歧义输入不擅自启用：茅台明显下跌时提醒" time="0.000740" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="歧义输入不擅自启用：下周关注茅台财报" time="0.000321" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="歧义输入不擅自启用：茅台和宁德时代低于 100 元提醒" time="0.000393" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="歧义输入不擅自启用：某只股票低于 100 元" time="0.000266" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="歧义输入不擅自启用：茅台价格变化时提醒" time="0.000378" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="歧义输入不擅自启用：茅台低于 1400 或高于 1500 提醒" time="0.000393" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="交易与保证收益请求被能力范围拦截" time="0.000494" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="不支持的附加指标和混合逻辑不得被静默忽略" time="0.001167" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="模型输出经二次验证，并实际构建结构化输出请求" time="0.066889" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="模型接口失败时明确降级" time="0.001784" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="模型无效结构时明确降级" time="0.003034" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="模型错误规则时明确降级" time="0.002380" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
-	<testcase name="API 端到端：编译、确认、检查、证据、通知与隔离" time="0.116133" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
-	<testcase name="拒绝跨来源写入与调度伪造" time="0.016329" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
-	<testcase name="私有平台调度入口默认关闭，仅显式启用的私有部署可用" time="0.004694" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
-	<testcase name="接口如实披露本地与云端调度实际频率" time="0.004120" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
-	<testcase name="无效 JSON、错误类型、过大输入和不存在接口安全返回" time="0.006199" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
-	<testcase name="示例初始化可重复调用且不污染其他浏览器空间" time="0.020634" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
-	<testcase name="主链路通知、去重及幂等请求只产生一次提醒" time="0.028184" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="条件恢复后再次命中，冷却中保留记录，结束后可通知" time="0.009647" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="公告按稳定事件 ID 去重，条件恢复也不重复旧公告" time="0.009257" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="未知结果不清空上一轮命中，恢复数据后不会重复通知" time="0.010527" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="暂停禁止检查，恢复保留去重与冷却" time="0.007449" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="修改规则生成版本，旧记录证据保留，拒绝过期版本覆盖" time="0.008653" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="到期任务由后台执行；未到期与暂停任务跳过；有心跳证据" time="0.007818" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="并发执行只允许一个任务租约，执行中不能编辑或暂停" time="0.007228" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="过期租约可恢复，旧执行者不能提交结果" time="0.007987" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="真实交易时段缺少官方日历时降级，不猜测交易日" time="0.065395" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="授权日历非交易日跳过；午休不调用数据接口" time="0.008847" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="持久化数据库重启后仍去重，并恢复到期调度" time="0.062749" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="用户隔离覆盖读取、运行、修改及通知" time="0.004957" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="旧执行者租约过期被新执行者接管后不能覆盖新结果" time="0.007178" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
-	<testcase name="Gemini 仅需自己的 key，使用已核对免费层模型默认值" time="0.003880" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="Gemini 请求在 header 放密钥，结构化草案经二次校验" time="0.065082" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="Gemini 配额耗尽后不重试、不切换其他模型，明确披露降级" time="0.006423" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="Gemini HTTP 400 安全降级且不暴露上游内容" time="0.002874" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="Gemini HTTP 401 安全降级且不暴露上游内容" time="0.001097" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="Gemini HTTP 403 安全降级且不暴露上游内容" time="0.001668" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="Gemini HTTP 404 安全降级且不暴露上游内容" time="0.000995" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="Gemini HTTP 503 安全降级且不暴露上游内容" time="0.000953" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="Gemini 截断、拦截、无效 JSON 与非法规则均不能作为有效模型草案" time="0.007400" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="Gemini 超时会说明原因，不吞掉用户关注输入" time="0.001700" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="Gemini 澄清结果保留，不擅自生成可启用规则" time="0.001274" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="运行状态仅返回 Gemini 提供方与模型名，不返回 key" time="0.015396" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
-	<testcase name="腾讯实验接口读取行情原始时间，不将抓取时间当数据时间" time="0.075075" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\providers.test.mjs"/>
-	<testcase name="公开行情错误状态和字段变化均不静默接受" time="0.003226" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\providers.test.mjs"/>
-	<testcase name="授权中继没有凭据配置时不切换成模拟数据" time="0.000619" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\providers.test.mjs"/>
-	<testcase name="中继由服务端配置，认证不回传浏览器，并标为真实来源" time="0.002568" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\providers.test.mjs"/>
-	<testcase name="标的解析区分沪深代码并拒绝多标的歧义" time="0.003462" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="规则规范化会丢弃额外字段并保留全部受支持条件" time="0.005287" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="拒绝未知标的" time="0.001281" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="拒绝非法阈值" time="0.000438" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="拒绝负数" time="0.000411" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="拒绝频率过高" time="0.000336" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="拒绝空条件" time="0.000271" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="拒绝过多条件" time="0.000260" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="拒绝错误操作符" time="0.000404" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="拒绝无时区日期" time="0.000928" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="拒绝不存在日期" time="0.000425" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="三值逻辑覆盖真、假与未知的全部组合" time="0.000466" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="比较边界：等于阈值仅满足非严格比较" time="0.001618" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="stale 不得伪装为条件未满足" time="0.000324" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="conflict 不得伪装为条件未满足" time="0.000201" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="failure 不得伪装为条件未满足" time="0.000169" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="missing 不得伪装为条件未满足" time="0.000139" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="未来数据时间异常被拒绝" time="0.000322" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="缺少来源不允许触发，组合已知结果仍保留降级标记" time="0.000476" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="日历时间到达即命中，不依赖行情" time="0.000271" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="规范化后的日历规则仍可再次校验和编辑" time="0.002171" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="事件按发布时间回看，不将未来公告视为已发生" time="0.000774" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<testcase name="交易时间处理北京时间、午休、收盘和周末" time="0.000337" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
-	<!-- tests 73 -->
+	<testcase name="本地明确价格语句编译为可修改草案，披露默认与未调用模型" time="0.005887" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="公告、热度、组合及绝对日期被解析" time="0.005505" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：茅台明显下跌时提醒" time="0.000887" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：下周关注茅台财报" time="0.000355" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：茅台和宁德时代低于 100 元提醒" time="0.000394" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：某只股票低于 100 元" time="0.000376" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：茅台价格变化时提醒" time="0.000398" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="歧义输入不擅自启用：茅台低于 1400 或高于 1500 提醒" time="0.000377" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="交易与保证收益请求被能力范围拦截" time="0.000455" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="不支持的附加指标和混合逻辑不得被静默忽略" time="0.002938" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="模型输出经二次验证，并实际构建结构化输出请求" time="0.064938" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="模型接口失败时明确降级" time="0.002182" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="模型无效结构时明确降级" time="0.003670" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="模型错误规则时明确降级" time="0.002040" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\agent.test.mjs"/>
+	<testcase name="API 端到端：编译、确认、检查、证据、通知与隔离" time="0.101214" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
+	<testcase name="拒绝跨来源写入与调度伪造" time="0.017211" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
+	<testcase name="私有平台调度入口默认关闭，仅显式启用的私有部署可用" time="0.004520" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
+	<testcase name="接口如实披露本地与云端调度实际频率" time="0.003664" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
+	<testcase name="无效 JSON、错误类型、过大输入和不存在接口安全返回" time="0.005098" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
+	<testcase name="示例初始化可重复调用且不污染其他浏览器空间" time="0.012477" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\api.test.mjs"/>
+	<testcase name="主链路通知、去重及幂等请求只产生一次提醒" time="0.027699" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="条件恢复后再次命中，冷却中保留记录，结束后可通知" time="0.009475" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="公告按稳定事件 ID 去重，条件恢复也不重复旧公告" time="0.008586" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="未知结果不清空上一轮命中，恢复数据后不会重复通知" time="0.008098" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="暂停禁止检查，恢复保留去重与冷却" time="0.007882" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="修改规则生成版本，旧记录证据保留，拒绝过期版本覆盖" time="0.008524" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="到期任务由后台执行；未到期与暂停任务跳过；有心跳证据" time="0.006546" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="并发执行只允许一个任务租约，执行中不能编辑或暂停" time="0.006006" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="过期租约可恢复，旧执行者不能提交结果" time="0.005995" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="真实交易时段缺少官方日历时降级，不猜测交易日" time="0.057819" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="授权日历非交易日跳过；午休不调用数据接口" time="0.006154" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="持久化数据库重启后仍去重，并恢复到期调度" time="0.054399" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="用户隔离覆盖读取、运行、修改及通知" time="0.004755" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="旧执行者租约过期被新执行者接管后不能覆盖新结果" time="0.006813" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\engine.test.mjs"/>
+	<testcase name="Gemini 仅需自己的 key，使用已核对免费层模型默认值" time="0.005613" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="Gemini 请求在 header 放密钥，结构化草案经二次校验" time="0.064303" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="Gemini 配额耗尽后不重试、不切换其他模型，明确披露降级" time="0.005627" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="Gemini HTTP 400 安全降级且不暴露上游内容" time="0.001922" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="Gemini HTTP 401 安全降级且不暴露上游内容" time="0.001022" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="Gemini HTTP 403 安全降级且不暴露上游内容" time="0.000946" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="Gemini HTTP 404 安全降级且不暴露上游内容" time="0.000788" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="Gemini HTTP 503 安全降级且不暴露上游内容" time="0.000747" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="Gemini 截断、拦截、无效 JSON 与非法规则均不能作为有效模型草案" time="0.004360" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="Gemini 超时会说明原因，不吞掉用户关注输入" time="0.001422" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="Gemini 澄清结果保留，不擅自生成可启用规则" time="0.001025" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="运行状态仅返回 Gemini 提供方与模型名，不返回 key" time="0.009693" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\gemini.test.mjs"/>
+	<testcase name="模型请求在真实 Worker 运行时可构造，Gemini 与原有提供方均受保护" time="0.499602" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\model-worker.test.mjs"/>
+	<testcase name="模型接口重定向被拒绝，不把密钥转发到新地址" time="0.377237" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\model-worker.test.mjs"/>
+	<testcase name="腾讯实验接口读取行情原始时间，不将抓取时间当数据时间" time="0.064293" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\providers.test.mjs"/>
+	<testcase name="公开行情错误状态和字段变化均不静默接受" time="0.002373" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\providers.test.mjs"/>
+	<testcase name="授权中继没有凭据配置时不切换成模拟数据" time="0.000547" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\providers.test.mjs"/>
+	<testcase name="中继由服务端配置，认证不回传浏览器，并标为真实来源" time="0.001998" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\providers.test.mjs"/>
+	<testcase name="标的解析区分沪深代码并拒绝多标的歧义" time="0.003025" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="规则规范化会丢弃额外字段并保留全部受支持条件" time="0.003924" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="拒绝未知标的" time="0.000857" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="拒绝非法阈值" time="0.000715" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="拒绝负数" time="0.000434" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="拒绝频率过高" time="0.000320" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="拒绝空条件" time="0.000279" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="拒绝过多条件" time="0.000270" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="拒绝错误操作符" time="0.000396" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="拒绝无时区日期" time="0.000736" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="拒绝不存在日期" time="0.000400" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="三值逻辑覆盖真、假与未知的全部组合" time="0.000992" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="比较边界：等于阈值仅满足非严格比较" time="0.001592" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="stale 不得伪装为条件未满足" time="0.000303" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="conflict 不得伪装为条件未满足" time="0.000219" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="failure 不得伪装为条件未满足" time="0.000138" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="missing 不得伪装为条件未满足" time="0.000104" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="未来数据时间异常被拒绝" time="0.000325" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="缺少来源不允许触发，组合已知结果仍保留降级标记" time="0.000465" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="日历时间到达即命中，不依赖行情" time="0.000255" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="规范化后的日历规则仍可再次校验和编辑" time="0.001907" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="事件按发布时间回看，不将未来公告视为已发生" time="0.000488" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<testcase name="交易时间处理北京时间、午休、收盘和周末" time="0.000290" classname="test" file="C:\Users\xujiachi\Desktop\ai -同花顺\radar\tests\rules.test.mjs"/>
+	<!-- tests 75 -->
 	<!-- suites 0 -->
-	<!-- pass 73 -->
+	<!-- pass 75 -->
 	<!-- fail 0 -->
 	<!-- cancelled 0 -->
 	<!-- skipped 0 -->
 	<!-- todo 0 -->
-	<!-- duration_ms 764.4904 -->
+	<!-- duration_ms 2180.7344 -->
 </testsuites>

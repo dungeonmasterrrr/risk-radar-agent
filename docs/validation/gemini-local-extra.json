@@ -1,0 +1,86 @@
+{
+  "testedAt": "2026-10-26T00:02:57.465Z",
+  "results": [
+    {
+      "name": "组合条件",
+      "mode": "local",
+      "provider": null,
+      "model": null,
+      "rule": {
+        "symbol": {
+          "code": "600036",
+          "market": "SH",
+          "name": "招商银行"
+        },
+        "provider": "demo",
+        "logic": "all",
+        "conditions": [
+          {
+            "id": "c1",
+            "type": "price",
+            "op": "gt",
+            "value": 40
+          },
+          {
+            "id": "c2",
+            "type": "heat",
+            "op": "gt",
+            "value": 80
+          }
+        ],
+        "schedule": {
+          "mode": "always",
+          "intervalSeconds": 600
+        },
+        "cooldownSeconds": 3600,
+        "maxAgeSeconds": 300
+      },
+      "questions": [],
+      "trace": [
+        {
+          "tool": "resolve_symbol",
+          "status": "ok",
+          "detail": "招商银行 · SH600036"
+        },
+        {
+          "tool": "model_compile",
+          "status": "degraded",
+          "detail": "模型请求超时，请稍后重试；降级为受限本地解析器，本次未使用大模型草案"
+        },
+        {
+          "tool": "local_compile",
+          "status": "ok",
+          "detail": "识别明确条件；默认设置需要确认"
+        }
+      ]
+    },
+    {
+      "name": "歧义澄清",
+      "mode": "local",
+      "provider": null,
+      "model": null,
+      "rule": null,
+      "questions": [
+        "请将模糊幅度或相对日期改为明确阈值或带日期的时间。",
+        "请明确价格阈值、公告关键词、热度阈值或日历提醒时间。"
+      ],
+      "trace": [
+        {
+          "tool": "resolve_symbol",
+          "status": "ok",
+          "detail": "贵州茅台 · SH600519"
+        },
+        {
+          "tool": "model_compile",
+          "status": "degraded",
+          "detail": "模型服务返回 HTTP 503；未暴露上游响应内容；降级为受限本地解析器，本次未使用大模型草案"
+        },
+        {
+          "tool": "local_compile",
+          "status": "needs_input",
+          "detail": "不猜测缺失条件"
+        }
+      ]
+    }
+  ]
+}
